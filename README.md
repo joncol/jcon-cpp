@@ -80,7 +80,7 @@ the result of the JSON RPC call is ready:
 req->connect(req.get(), &jcon::JsonRpcRequest::handleResult,
              [](const QVariant& result) {
                  qDebug() << "result of RPC call:" << result;
-                 jqApp->exit();
+                 qApp->exit();
              });
 ```
 
