@@ -1,7 +1,7 @@
 ## JCON
 
-If you're using C++ 11 and Qt, and want to create an RPC client or server,
-**JCON** might prove useful.
+If you're using **C++ 11** and **Qt**, and want to create a **JSON RPC 2.0**
+client or server, **JCON** might prove useful.
 
 
 ## Creating a Server
@@ -10,7 +10,7 @@ If you're using C++ 11 and Qt, and want to create an RPC client or server,
 auto rpc_server = new jcon::JsonRpcTcpServer(parent);
 ```
 
-Create a service (a collection of invokable methods) by:
+Create a service (a collection of invokable methods):
 
 1. Make your service class inherit `QObject`
 2. Make sure your service method is accessible by the Qt meta object system
@@ -30,7 +30,7 @@ public:
 };
 ```
 
-Parameters and return types are automatically matched against the RPC call,
+Parameters and return types are automatically matched against the JSON RPC call,
 using the Qt Meta object system, and you can use lists (`QVariantList`) and
 dictionary type objects (`QVariantMap`) in addition to the standard primitive
 types such as `QString`, `bool`, `int`, `float`, etc.
@@ -74,7 +74,7 @@ jcon::JsonRpcClient::RequestPtr req = rpc_client->call("getRandomInt", 10);
 ```
 
 The returned `RequestPtr` can be used to set up a callback that is invoked when
-the result of the RPC call is ready:
+the result of the JSON RPC call is ready:
 
 ```c++
 req->connect(req.get(), &jcon::JsonRpcRequest::handleResult,
