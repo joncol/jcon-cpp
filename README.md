@@ -1,12 +1,12 @@
 ## JCON
 
-If you're using C++ 11 and Qt, and want to create an RPC client or server, JCON
-might prove useful.
+If you're using C++ 11 and Qt, and want to create an RPC client or server,
+**JCON** might prove useful.
 
 
 ## Creating a Server
 
-```
+```c++
 auto rpc_server = new jcon::JsonRpcTcpServer(parent);
 ```
 
@@ -17,7 +17,7 @@ Create a service (a collection of invokable methods) by:
    (either by using the `Q_INVOKABLE` macro or by putting the method in a
    `public slots:` section). For instance:
 
-```
+```c++
 class ExampleService : public QObject
 {
     Q_OBJECT
@@ -37,7 +37,7 @@ types such as `QString`, `bool`, `int`, `float`, etc.
 
 Register your service with:
 
-```
+```c++
 auto service = new ExampleService;
 rpc_server->registerService(service);
 ```
@@ -47,7 +47,7 @@ releasing the memory allocated above.
 
 Finally, start listening for client connections by:
 
-```
+```c++
 rpc_server->listen("127.0.0.1", 6001);
 ```
 
@@ -58,7 +58,7 @@ Specify whatever port you want to use.
 
 Simple:
 
-```
+```c++
 auto rpc_client = std::make_shared<jcon::JsonRpcTcpClient>(parent);
 rpc_client->connectToServer("127.0.0.1", 6002);
 ```
@@ -69,14 +69,14 @@ as long as a parent `QObject` is provided.)
 
 ### Invoking a Remote Method
 
-```
+```c++
 jcon::JsonRpcClient::RequestPtr req = rpc_client->call("getRandomInt", 10);
 ```
 
 The returned `RequestPtr` can be used to set up a callback that is invoked when
 the result of the RPC call is ready:
 
-```
+```c++
 req->connect(req.get(), &jcon::JsonRpcRequest::handleResult,
              [](const QVariant& result) {
                  qDebug() << "result of RPC call:" << result;
@@ -86,7 +86,7 @@ req->connect(req.get(), &jcon::JsonRpcRequest::handleResult,
 
 If you want to handle errors:
 
-```
+```c++
 req->connect(req.get(), &jcon::JsonRpcRequest::handleError,
              [](int code, const QString& message, const QVariant& data) {
                  qDebug() << "RPC error: " << message << " (" << code << ")";
