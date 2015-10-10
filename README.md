@@ -60,7 +60,7 @@ Simple:
 
 ```c++
 auto rpc_client = std::make_shared<jcon::JsonRpcTcpClient>(parent);
-rpc_client->connectToServer("127.0.0.1", 6002);
+rpc_client->connectToServer("127.0.0.1", 6001);
 ```
 
 (No real need to use a smart pointer here, since the destructor will be called
