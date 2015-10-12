@@ -1,7 +1,7 @@
 #include "json_rpc_client.h"
 #include "json_rpc_file_logger.h"
+#include "jcon_assert.h"
 
-#include <cassert>
 #include <memory>
 
 namespace jcon {
@@ -41,7 +41,7 @@ void JsonRpcClient::disconnectFromServer()
 
 void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
 {
-    assert(response["jsonrpc"].toString() == "2.0");
+    JCON_ASSERT(response["jsonrpc"].toString() == "2.0");
 
     if (response.value("jsonrpc").toString() != "2.0") {
         logError("invalid protocol tag");
@@ -99,7 +99,7 @@ void JsonRpcClient::getJsonErrorInfo(const QJsonObject& response,
                                      QVariant& data)
 {
     QJsonObject error = response["error"].toObject();
-    code = error["code"].toInt(0);
+    code = error["code"].toInt();
     message = error["message"].toString("unknown error");
     data = error.value("data").toVariant();
 }

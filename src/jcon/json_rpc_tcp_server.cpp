@@ -1,7 +1,6 @@
 #include "json_rpc_tcp_server.h"
 #include "json_rpc_tcp_socket.h"
-
-#include <cassert>
+#include "jcon_assert.h"
 
 namespace jcon {
 
@@ -39,11 +38,11 @@ JsonRpcEndpoint* JsonRpcTcpServer::findClient(QObject* socket)
 
 void JsonRpcTcpServer::newConnection()
 {
-    assert(m_server.hasPendingConnections());
+    JCON_ASSERT(m_server.hasPendingConnections());
     if (m_server.hasPendingConnections()) {
         QTcpSocket* tcp_socket = m_server.nextPendingConnection();
 
-        assert(tcp_socket);
+        JCON_ASSERT(tcp_socket);
         if (!tcp_socket) {
             logError("pending socket was null");
             return;
@@ -72,7 +71,7 @@ void JsonRpcTcpServer::newConnection()
 void JsonRpcTcpServer::clientDisconnected(QObject* client_socket)
 {
     QTcpSocket* tcp_socket = qobject_cast<QTcpSocket*>(client_socket);
-    assert(tcp_socket);
+    JCON_ASSERT(tcp_socket);
     if (!tcp_socket) {
         logError("client disconnected, but socket is null");
         return;
@@ -80,7 +79,7 @@ void JsonRpcTcpServer::clientDisconnected(QObject* client_socket)
 
     logInfo("client disconnected: " + tcp_socket->peerAddress().toString());
     auto it = m_client_endpoints.find(tcp_socket);
-    assert(it != m_client_endpoints.end());
+    JCON_ASSERT(it != m_client_endpoints.end());
     if (it == m_client_endpoints.end()) {
         logError("unknown client disconnected");
         return;

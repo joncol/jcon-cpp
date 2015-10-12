@@ -1,11 +1,10 @@
 #include "json_rpc_endpoint.h"
 #include "json_rpc_socket.h"
+#include "jcon_assert.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTcpSocket>
-
-#include <cassert>
 
 namespace jcon {
 
@@ -54,7 +53,7 @@ void JsonRpcEndpoint::send(const QJsonDocument& doc)
 
 void JsonRpcEndpoint::dataReceived(const QByteArray& bytes, QObject* socket)
 {
-    assert(bytes.length() > 0);
+    JCON_ASSERT(bytes.length() > 0);
     m_recv_buffer += bytes;
     m_recv_buffer = processBuffer(m_recv_buffer.trimmed(), socket);
 }
@@ -64,7 +63,7 @@ QByteArray JsonRpcEndpoint::processBuffer(const QByteArray& buffer,
 {
     QByteArray buf(buffer);
 
-    assert(buf[0] == '{');
+    JCON_ASSERT(buf[0] == '{');
 
     bool in_string = false;
     int brace_nesting_level = 0;
@@ -83,12 +82,12 @@ QByteArray JsonRpcEndpoint::processBuffer(const QByteArray& buffer,
 
             if (curr_ch == '}') {
                 --brace_nesting_level;
-                assert(brace_nesting_level >= 0);
+                JCON_ASSERT(brace_nesting_level >= 0);
 
                 if (brace_nesting_level == 0) {
                     auto doc = QJsonDocument::fromJson(buf.left(i));
-                    assert(!doc.isNull());
-                    assert(doc.isObject());
+                    JCON_ASSERT(!doc.isNull());
+                    JCON_ASSERT(doc.isObject());
                     if (doc.isObject())
                         emit jsonObjectReceived(doc.object(), socket);
                     buf = chopLeft(buf, i);

@@ -1,6 +1,5 @@
 #include "json_rpc_tcp_socket.h"
-
-#include <cassert>
+#include "jcon_assert.h"
 
 namespace jcon {
 
@@ -83,7 +82,7 @@ int JsonRpcTcpSocket::peerPort() const
 
 void JsonRpcTcpSocket::dataReady()
 {
-    assert(m_socket->bytesAvailable() > 0);
+    JCON_ASSERT(m_socket->bytesAvailable() > 0);
     QByteArray bytes = m_socket->read(m_socket->bytesAvailable());
     emit dataReceived(bytes, m_socket);
 }

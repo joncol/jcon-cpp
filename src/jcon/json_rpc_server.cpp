@@ -1,14 +1,13 @@
 #include "json_rpc_server.h"
 #include "json_rpc_endpoint.h"
 #include "json_rpc_file_logger.h"
+#include "jcon_assert.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QVariant>
 #include <QMetaMethod>
-
-#include <cassert>
 
 namespace jcon {
 
@@ -35,7 +34,7 @@ void JsonRpcServer::registerService(QObject* service)
 void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
                                         QObject* socket)
 {
-    assert(request.value("jsonrpc").toString() == "2.0");
+    JCON_ASSERT(request.value("jsonrpc").toString() == "2.0");
 
     if (request.value("jsonrpc").toString() != "2.0") {
         logError("invalid protocol tag");
