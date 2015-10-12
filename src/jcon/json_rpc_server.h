@@ -58,9 +58,28 @@ private:
                   QVariant& return_value);
 
     bool call(QObject* object,
-              QMetaMethod meta_method,
-              QVariantList args,
+              const QMetaMethod& meta_method,
+              const QVariantList& args,
               QVariant& return_value);
+
+    bool call(QObject* object,
+              const QMetaMethod& meta_method,
+              const QVariantMap& args,
+              QVariant& return_value);
+
+
+    bool convertArgs(const QMetaMethod& meta_method,
+                     const QVariantList& args,
+                     QVariantList& converted);
+
+    bool convertArgs(const QMetaMethod& meta_method,
+                     const QVariantMap& args,
+                     QVariantList& converted);
+
+    bool doCall(QObject* object,
+                const QMetaMethod& meta_method,
+                QVariantList& converted_args,
+                QVariant& return_value);
 
     QJsonDocument createResponse(const QString& request_id,
                                  const QVariant& return_value,
