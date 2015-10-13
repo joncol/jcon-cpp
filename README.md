@@ -1,7 +1,11 @@
 ## JCON
 
 If you're using **C++ 11** and **Qt**, and want to create a **JSON RPC 2.0**
-client or server, **JCON** might prove useful.
+client or server, using either **TCP** or **WebSockets** as underlying transport
+layer, then **JCON** might prove useful.
+
+In all of the following, replace "Tcp" with "WebSocket" to change the transport
+method.
 
 
 ## Creating a Server
