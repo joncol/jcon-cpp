@@ -6,11 +6,7 @@
 
 #include <QTcpSocket>
 
-#include <memory>
-
 namespace jcon {
-
-typedef std::shared_ptr<QTcpSocket> QTcpSocketPtr;
 
 class JCON_API JsonRpcTcpSocket : public JsonRpcSocket
 {
@@ -24,8 +20,8 @@ public:
 
     /**
      * Constructor taking a previously created socket. This is used by
-     * JsonRpcServer, since QTcpServer::nextPendingConnection() returns a
-     * QTcpSocket returns an already created socket for the client connection.
+     * JsonRpcServer, since QTcpServer::nextPendingConnection() returns an
+     * already created socket for the client connection.
      *
      * @param[in] socket The TCP socket to use.
      */
@@ -34,7 +30,7 @@ public:
     virtual ~JsonRpcTcpSocket();
 
     void connectToHost(QString host, int port) override;
-    bool waitForConnected() override;
+    bool waitForConnected(int msecs) override;
     void disconnectFromHost() override;
     void send(const QByteArray& data) override;
     QString errorString() const override;

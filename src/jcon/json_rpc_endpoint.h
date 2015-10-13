@@ -28,7 +28,7 @@ public:
                     QObject* parent = nullptr);
     virtual ~JsonRpcEndpoint();
 
-    void connectToHost(const QString& host, int port);
+    bool connectToHost(const QString& host, int port);
     void disconnectFromHost();
 
     void send(const QJsonDocument& doc);

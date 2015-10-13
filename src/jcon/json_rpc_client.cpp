@@ -26,11 +26,16 @@ JsonRpcClient::~JsonRpcClient()
     disconnectFromServer();
 }
 
-void JsonRpcClient::connectToServer(const QString& host, int port)
+bool JsonRpcClient::connectToServer(const QString& host, int port)
 {
-    m_endpoint->connectToHost(host, port);
+    if (!m_endpoint->connectToHost(host, port)) {
+        return false;
+    }
+
     connect(m_endpoint.get(), &JsonRpcEndpoint::jsonObjectReceived,
             this, &JsonRpcClient::jsonResponseReceived);
+
+    return true;
 }
 
 void JsonRpcClient::disconnectFromServer()

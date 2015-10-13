@@ -31,7 +31,7 @@ public:
                   JsonRpcLoggerPtr logger = nullptr);
     virtual ~JsonRpcClient();
 
-    void connectToServer(const QString& host, int port);
+    bool connectToServer(const QString& host, int port);
     void disconnectFromServer();
 
     template<typename... T>
@@ -65,6 +65,8 @@ JsonRpcClient::RequestPtr JsonRpcClient::call(const QString& method,
                                               T&&... params)
 {
     RequestId id = QUuid::createUuid().toString();
+    int len = id.length();
+    id = id.left(len - 1).right(len - 2);
     auto request = std::make_shared<JsonRpcRequest>(this, id);
     m_outstanding_requests[id] = request;
 

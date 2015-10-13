@@ -19,7 +19,7 @@ public:
     virtual ~JsonRpcSocket() {}
 
     virtual void connectToHost(QString host, int port) = 0;
-    virtual bool waitForConnected() = 0;
+    virtual bool waitForConnected(int msecs = 30000) = 0;
     virtual void disconnectFromHost() = 0;
     virtual void send(const QByteArray& data) = 0;
     virtual QString errorString() const = 0;

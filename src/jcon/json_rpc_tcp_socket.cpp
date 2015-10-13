@@ -39,9 +39,9 @@ void JsonRpcTcpSocket::connectToHost(QString host, int port)
     m_socket->connectToHost(host, port);
 }
 
-bool JsonRpcTcpSocket::waitForConnected()
+bool JsonRpcTcpSocket::waitForConnected(int msecs)
 {
-    return m_socket->waitForConnected();
+    return m_socket->waitForConnected(msecs);
 }
 
 void JsonRpcTcpSocket::disconnectFromHost()

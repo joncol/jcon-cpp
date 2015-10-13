@@ -23,7 +23,7 @@ public:
 
     virtual void registerService(QObject* service);
 
-    virtual void listen(const QString& address, int port) = 0;
+    virtual void listen(int port) = 0;
     virtual void close() = 0;
 
 protected:

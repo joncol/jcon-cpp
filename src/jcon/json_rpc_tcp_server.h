@@ -21,7 +21,7 @@ public:
                      JsonRpcLoggerPtr logger = nullptr);
     virtual ~JsonRpcTcpServer();
 
-    void listen(const QString& address, int port) override;
+    void listen(int port) override;
     void close() override;
 
 protected:

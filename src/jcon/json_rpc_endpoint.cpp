@@ -29,15 +29,18 @@ JsonRpcEndpoint::~JsonRpcEndpoint()
     m_socket->disconnect(this);
 }
 
-void JsonRpcEndpoint::connectToHost(const QString& host, int port)
+bool JsonRpcEndpoint::connectToHost(const QString& host, int port)
 {
     m_socket->connectToHost(host, port);
-    if (!m_socket->waitForConnected()) {
+
+    if (!m_socket->waitForConnected(5000)) {
         m_logger->logError("could not connect to JSON RPC server: " +
                            m_socket->errorString());
-        return;
+        return false;
     }
+
     m_logger->logInfo(QString("connected to server %1:%2").arg(host).arg(port));
+    return true;
 }
 
 void JsonRpcEndpoint::disconnectFromHost()

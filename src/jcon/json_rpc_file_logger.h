@@ -23,8 +23,6 @@ private:
     QTextStream m_stream;
 };
 
-typedef std::shared_ptr<JsonRpcLogger> JsonRpcLoggerPtr;
-
 }
 
 #endif

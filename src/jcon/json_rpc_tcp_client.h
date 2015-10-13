@@ -1,10 +1,7 @@
-#ifndef JSONRPCTCPCLIENT_H
-#define JSONRPCTCPCLIENT_H
+#ifndef JSON_RPC_TCP_CLIENT_H
+#define JSON_RPC_TCP_CLIENT_H
 
 #include "json_rpc_client.h"
-#include "json_rpc_logger.h"
-
-#include <QObject>
 
 namespace jcon {
 
