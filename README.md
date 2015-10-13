@@ -52,7 +52,7 @@ releasing the memory allocated above.
 Finally, start listening for client connections by:
 
 ```c++
-rpc_server->listen("127.0.0.1", 6001);
+rpc_server->listen(6001);
 ```
 
 Specify whatever port you want to use.

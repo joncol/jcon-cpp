@@ -15,7 +15,7 @@ void startServer(QObject* parent)
     auto rpc_server = new jcon::JsonRpcTcpServer(parent);
     auto service = new ExampleService;
     rpc_server->registerService(service);
-    rpc_server->listen("127.0.0.1", 6002);
+    rpc_server->listen(6002);
 }
 
 jcon::JsonRpcClientPtr startClient(QObject* parent)
