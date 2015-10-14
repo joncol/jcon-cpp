@@ -28,8 +28,10 @@ public:
                     QObject* parent = nullptr);
     virtual ~JsonRpcEndpoint();
 
-    bool connectToHost(const QString& host, int port);
+    bool connectToHost(const QString& host, int port, int msecs = 5000);
+    void connectToHostAsync(const QString& host, int port);
     void disconnectFromHost();
+    bool isConnected() const;
 
     void send(const QJsonDocument& doc);
 
@@ -42,7 +44,10 @@ signals:
      */
     void jsonObjectReceived(const QJsonObject& obj, QObject* sender);
 
-    /// Connected to the underlying socket's disconnected signal.
+    /// Emitted when the underlying socket is connected (after async connect).
+    void socketConnected(QObject* socket);
+
+    /// Emitted when the underlying socket is disconnected.
     void socketDisconnected(QObject* socket);
 
 private slots:

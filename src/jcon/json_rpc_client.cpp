@@ -44,6 +44,11 @@ void JsonRpcClient::disconnectFromServer()
     m_endpoint->disconnect(this);
 }
 
+bool JsonRpcClient::isConnected() const
+{
+    return m_endpoint->isConnected();
+}
+
 void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
 {
     JCON_ASSERT(response["jsonrpc"].toString() == "2.0");

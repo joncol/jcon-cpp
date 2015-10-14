@@ -26,12 +26,16 @@ void JsonRpcTcpSocket::setupSocket()
     m_socket->setSocketOption(QAbstractSocket::LowDelayOption, "1");
     m_socket->setSocketOption(QAbstractSocket::KeepAliveOption, "1");
 
-    connect(m_socket, &QTcpSocket::readyRead,
-            this, &JsonRpcTcpSocket::dataReady);
+    connect(m_socket, &QTcpSocket::connected, [this]() {
+        emit socketConnected(m_socket);
+    });
 
     connect(m_socket, &QTcpSocket::disconnected, [this]() {
         emit socketDisconnected(m_socket);
     });
+
+    connect(m_socket, &QTcpSocket::readyRead,
+            this, &JsonRpcTcpSocket::dataReady);
 }
 
 void JsonRpcTcpSocket::connectToHost(QString host, int port)
@@ -48,6 +52,11 @@ void JsonRpcTcpSocket::disconnectFromHost()
 {
     m_socket->disconnectFromHost();
     m_socket->close();
+}
+
+bool JsonRpcTcpSocket::isConnected() const
+{
+    return m_socket->state() == QAbstractSocket::ConnectedState;
 }
 
 void JsonRpcTcpSocket::send(const QByteArray& data)

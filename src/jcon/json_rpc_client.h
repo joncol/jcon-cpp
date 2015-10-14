@@ -34,6 +34,8 @@ public:
     bool connectToServer(const QString& host, int port);
     void disconnectFromServer();
 
+    bool isConnected() const;
+
     template<typename... T>
     RequestPtr call(const QString& method, T&&... params);
 

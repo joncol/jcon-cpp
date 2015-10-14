@@ -18,10 +18,14 @@ JsonRpcEndpoint::JsonRpcEndpoint(JsonRpcSocketPtr socket,
     , m_logger(logger)
     , m_socket(socket)
 {
-    connect(m_socket.get(), &JsonRpcSocket::dataReceived,
-            this, &JsonRpcEndpoint::dataReceived);
+    connect(m_socket.get(), &JsonRpcSocket::socketConnected,
+            this, &JsonRpcEndpoint::socketConnected);
+
     connect(m_socket.get(), &JsonRpcSocket::socketDisconnected,
             this, &JsonRpcEndpoint::socketDisconnected);
+
+    connect(m_socket.get(), &JsonRpcSocket::dataReceived,
+            this, &JsonRpcEndpoint::dataReceived);
 }
 
 JsonRpcEndpoint::~JsonRpcEndpoint()
@@ -29,11 +33,11 @@ JsonRpcEndpoint::~JsonRpcEndpoint()
     m_socket->disconnect(this);
 }
 
-bool JsonRpcEndpoint::connectToHost(const QString& host, int port)
+bool JsonRpcEndpoint::connectToHost(const QString& host, int port, int msecs)
 {
     m_socket->connectToHost(host, port);
 
-    if (!m_socket->waitForConnected(5000)) {
+    if (!m_socket->waitForConnected(msecs)) {
         m_logger->logError("could not connect to JSON RPC server: " +
                            m_socket->errorString());
         return false;
@@ -43,9 +47,19 @@ bool JsonRpcEndpoint::connectToHost(const QString& host, int port)
     return true;
 }
 
+void JsonRpcEndpoint::connectToHostAsync(const QString& host, int port)
+{
+    m_socket->connectToHost(host, port);
+}
+
 void JsonRpcEndpoint::disconnectFromHost()
 {
     m_socket->disconnectFromHost();
+}
+
+bool JsonRpcEndpoint::isConnected() const
+{
+    return m_socket->isConnected();
 }
 
 void JsonRpcEndpoint::send(const QJsonDocument& doc)

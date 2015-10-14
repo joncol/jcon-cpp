@@ -60,6 +60,11 @@ void JsonRpcWebSocket::disconnectFromHost()
     m_socket->close();
 }
 
+bool JsonRpcWebSocket::isConnected() const
+{
+    return m_socket->state() == QAbstractSocket::ConnectedState;
+}
+
 void JsonRpcWebSocket::send(const QByteArray& data)
 {
     m_socket->sendTextMessage(data);
