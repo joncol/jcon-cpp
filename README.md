@@ -97,3 +97,9 @@ req->connect(req.get(), &jcon::JsonRpcRequest::handleError,
                  qApp->exit();
              });
 ```
+
+
+## Known Issues
+
+* Error handling needs to be improved
+* Does not yet support batch requests/responses

@@ -5,7 +5,7 @@
 
 namespace jcon {
 
-class JsonRpcTcpClient : public JsonRpcClient
+class JCON_API JsonRpcTcpClient : public JsonRpcClient
 {
     Q_OBJECT
 

@@ -5,7 +5,7 @@
 
 namespace jcon {
 
-class JsonRpcWebSocketClient : public JsonRpcClient
+class JCON_API JsonRpcWebSocketClient : public JsonRpcClient
 {
     Q_OBJECT
 
