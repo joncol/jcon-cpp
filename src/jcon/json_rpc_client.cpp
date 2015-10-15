@@ -19,6 +19,12 @@ JsonRpcClient::JsonRpcClient(JsonRpcSocketPtr socket,
     }
 
     m_endpoint = std::make_shared<JsonRpcEndpoint>(socket, m_logger, this);
+
+    connect(m_endpoint.get(), &JsonRpcEndpoint::socketConnected,
+            this, &JsonRpcClient::socketConnected);
+
+    connect(m_endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
+            this, &JsonRpcClient::socketDisconnected);
 }
 
 JsonRpcClient::~JsonRpcClient()
@@ -47,6 +53,16 @@ void JsonRpcClient::disconnectFromServer()
 bool JsonRpcClient::isConnected() const
 {
     return m_endpoint->isConnected();
+}
+
+QHostAddress JsonRpcClient::serverAddress() const
+{
+    return m_endpoint->peerAddress();
+}
+
+int JsonRpcClient::serverPort() const
+{
+    return m_endpoint->peerPort();
 }
 
 void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)

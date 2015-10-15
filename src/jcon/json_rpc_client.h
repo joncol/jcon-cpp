@@ -36,8 +36,18 @@ public:
 
     bool isConnected() const;
 
+    QHostAddress serverAddress() const;
+    int serverPort() const;
+
     template<typename... T>
     RequestPtr call(const QString& method, T&&... params);
+
+signals:
+    /// Emitted when a connection has been made to the server.
+    void socketConnected(QObject* socket);
+
+    /// Emitted when connection to server is lost.
+    void socketDisconnected(QObject* socket);
 
 protected:
     void logError(const QString& msg);

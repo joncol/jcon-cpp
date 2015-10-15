@@ -33,6 +33,11 @@ public:
     void disconnectFromHost();
     bool isConnected() const;
 
+    QHostAddress localAddress() const;
+    int localPort() const;
+    QHostAddress peerAddress() const;
+    int peerPort() const;
+
     void send(const QJsonDocument& doc);
 
 signals:
@@ -44,7 +49,7 @@ signals:
      */
     void jsonObjectReceived(const QJsonObject& obj, QObject* sender);
 
-    /// Emitted when the underlying socket is connected (after async connect).
+    /// Emitted when the underlying socket is connected.
     void socketConnected(QObject* socket);
 
     /// Emitted when the underlying socket is disconnected.

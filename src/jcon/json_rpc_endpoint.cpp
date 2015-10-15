@@ -62,6 +62,27 @@ bool JsonRpcEndpoint::isConnected() const
     return m_socket->isConnected();
 }
 
+QHostAddress JsonRpcEndpoint::localAddress() const
+{
+    return m_socket->localAddress();
+}
+
+int JsonRpcEndpoint::localPort() const
+{
+    return m_socket->localPort();
+}
+
+QHostAddress JsonRpcEndpoint::peerAddress() const
+{
+    return m_socket->peerAddress();
+}
+
+int JsonRpcEndpoint::peerPort() const
+{
+    return m_socket->peerPort();
+}
+
+
 void JsonRpcEndpoint::send(const QJsonDocument& doc)
 {
     QByteArray bytes = doc.toJson();
