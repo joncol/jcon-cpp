@@ -1,8 +1,8 @@
-## JCON
+## JCON-CPP
 
 If you're using **C++ 11** and **Qt**, and want to create a **JSON RPC 2.0**
 client or server, using either **TCP** or **WebSockets** as underlying transport
-layer, then **JCON** might prove useful.
+layer, then **JCON-CPP** might prove useful.
 
 In all of the following, replace "Tcp" with "WebSocket" to change the transport
 method.
@@ -103,3 +103,15 @@ req->connect(req.get(), &jcon::JsonRpcRequest::handleError,
 
 * Error handling needs to be improved
 * Does not yet support batch requests/responses
+
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at
+https://github.com/joncol/jcon-cpp.
+
+
+## License
+
+The gem is available as open source under the terms of the [MIT
+License](http://opensource.org/licenses/MIT).
