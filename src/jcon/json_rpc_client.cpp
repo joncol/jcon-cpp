@@ -32,12 +32,41 @@ JsonRpcClient::~JsonRpcClient()
     disconnectFromServer();
 }
 
+std::pair<JsonRpcClient::RequestPtr, QJsonObject>
+JsonRpcClient::prepareCall(const QString& method)
+{
+    RequestPtr request;
+    RequestId id;
+    std::tie(request, id) = createRequest();
+    m_outstanding_requests[id] = request;
+    QJsonObject req_json_obj = createRequestJsonObject(method, id);
+    return std::make_pair(request, req_json_obj);
+}
+
+std::pair<JsonRpcClient::RequestPtr, JsonRpcClient::RequestId>
+JsonRpcClient::createRequest()
+{
+    auto id = createUuid();
+    auto request = std::make_shared<JsonRpcRequest>(this, id);
+    return std::make_pair(request, id);
+}
+
 JsonRpcClient::RequestId JsonRpcClient::createUuid()
 {
     RequestId id = QUuid::createUuid().toString();
     int len = id.length();
     id = id.left(len - 1).right(len - 2);
     return id;
+}
+
+QJsonObject JsonRpcClient::createRequestJsonObject(const QString& method,
+                                                   const QString& id)
+{
+    return QJsonObject {
+        { "jsonrpc", "2.0" },
+        { "method", method },
+        { "id", id }
+    };
 }
 
 bool JsonRpcClient::connectToServer(const QString& host, int port)

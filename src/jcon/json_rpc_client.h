@@ -13,6 +13,7 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
 namespace jcon {
 
@@ -30,8 +31,6 @@ public:
                   QObject* parent = nullptr,
                   JsonRpcLoggerPtr logger = nullptr);
     virtual ~JsonRpcClient();
-
-    static RequestId createUuid();
 
     bool connectToServer(const QString& host, int port);
     void disconnectFromServer();
@@ -63,6 +62,13 @@ private slots:
 private:
     static const QString InvalidRequestId;
 
+    // helper to minimize template size
+    std::pair<RequestPtr, QJsonObject> prepareCall(const QString& method);
+    std::pair<RequestPtr, RequestId> createRequest();
+    static RequestId createUuid();
+    QJsonObject createRequestJsonObject(const QString& method,
+                                        const QString& id);
+
     template<typename T>
     void convertToQVariantList(QVariantList& result, T&& x);
 
@@ -87,21 +93,14 @@ template<typename... T>
 JsonRpcClient::RequestPtr JsonRpcClient::call(const QString& method,
                                               T&&... params)
 {
-    auto id = createUuid();
-    auto request = std::make_shared<JsonRpcRequest>(this, id);
-    m_outstanding_requests[id] = request;
-
-    QJsonObject req_json_obj {
-        { "jsonrpc", "2.0" },
-        { "method", method },
-        { "id", id }
-    };
+    RequestPtr request;
+    QJsonObject req_json_obj;
+    std::tie(request, req_json_obj) = prepareCall(method);
 
     if (sizeof...(T) > 0) {
         QVariantList param_list;
         convertToQVariantList(param_list, std::forward<T>(params)...);
-        auto json_params = QJsonArray::fromVariantList(param_list);
-        req_json_obj["params"] = json_params;
+        req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
     }
 
     m_endpoint->send(QJsonDocument(req_json_obj));
