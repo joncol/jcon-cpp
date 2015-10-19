@@ -31,10 +31,15 @@ public:
                   JsonRpcLoggerPtr logger = nullptr);
     virtual ~JsonRpcClient();
 
+    static RequestId createUuid();
+
     bool connectToServer(const QString& host, int port);
     void disconnectFromServer();
 
     bool isConnected() const;
+
+    QHostAddress clientAddress() const;
+    int clientPort() const;
 
     QHostAddress serverAddress() const;
     int serverPort() const;
@@ -58,6 +63,12 @@ private slots:
 private:
     static const QString InvalidRequestId;
 
+    template<typename T>
+    void convertToQVariantList(QVariantList& result, T&& x);
+
+    template<typename T, typename... Ts>
+    void convertToQVariantList(QVariantList& result, T&& head, Ts&&... tail);
+
     static void getJsonErrorInfo(const QJsonObject& response,
                                  int& code,
                                  QString& message,
@@ -76,9 +87,7 @@ template<typename... T>
 JsonRpcClient::RequestPtr JsonRpcClient::call(const QString& method,
                                               T&&... params)
 {
-    RequestId id = QUuid::createUuid().toString();
-    int len = id.length();
-    id = id.left(len - 1).right(len - 2);
+    auto id = createUuid();
     auto request = std::make_shared<JsonRpcRequest>(this, id);
     m_outstanding_requests[id] = request;
 
@@ -88,14 +97,30 @@ JsonRpcClient::RequestPtr JsonRpcClient::call(const QString& method,
         { "id", id }
     };
 
-    if (sizeof...(params) > 0) {
-        QJsonArray json_params{std::forward<T>(params)...};
+    if (sizeof...(T) > 0) {
+        QVariantList param_list;
+        convertToQVariantList(param_list, std::forward<T>(params)...);
+        auto json_params = QJsonArray::fromVariantList(param_list);
         req_json_obj["params"] = json_params;
     }
 
     m_endpoint->send(QJsonDocument(req_json_obj));
 
     return request;
+}
+
+template<typename T>
+void JsonRpcClient::convertToQVariantList(QVariantList& result, T&& x)
+{
+    result.push_front(x);
+}
+
+template<typename T, typename... Ts>
+void JsonRpcClient::convertToQVariantList(QVariantList& result,
+                                          T&& head, Ts&&... tail)
+{
+    convertToQVariantList(result, std::forward<Ts>(tail)...);
+    result.push_front(head);
 }
 
 }

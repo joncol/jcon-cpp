@@ -32,6 +32,14 @@ JsonRpcClient::~JsonRpcClient()
     disconnectFromServer();
 }
 
+JsonRpcClient::RequestId JsonRpcClient::createUuid()
+{
+    RequestId id = QUuid::createUuid().toString();
+    int len = id.length();
+    id = id.left(len - 1).right(len - 2);
+    return id;
+}
+
 bool JsonRpcClient::connectToServer(const QString& host, int port)
 {
     if (!m_endpoint->connectToHost(host, port)) {
@@ -53,6 +61,16 @@ void JsonRpcClient::disconnectFromServer()
 bool JsonRpcClient::isConnected() const
 {
     return m_endpoint->isConnected();
+}
+
+QHostAddress JsonRpcClient::clientAddress() const
+{
+    return m_endpoint->localAddress();
+}
+
+int JsonRpcClient::clientPort() const
+{
+    return m_endpoint->localPort();
 }
 
 QHostAddress JsonRpcClient::serverAddress() const
