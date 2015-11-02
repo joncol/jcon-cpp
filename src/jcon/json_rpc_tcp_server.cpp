@@ -60,6 +60,9 @@ void JsonRpcTcpServer::newConnection()
         connect(endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
                 this, &JsonRpcTcpServer::clientDisconnected);
 
+        connect(endpoint.get(), &JsonRpcEndpoint::socketError,
+                this, &JsonRpcServer::socketError);
+
         connect(endpoint.get(), &JsonRpcEndpoint::jsonObjectReceived,
                 this, &JsonRpcServer::jsonRequestReceived);
 

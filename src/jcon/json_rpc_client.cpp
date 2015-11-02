@@ -1,6 +1,11 @@
 #include "json_rpc_client.h"
 #include "json_rpc_file_logger.h"
+#include "json_rpc_success.h"
 #include "jcon_assert.h"
+#include "string_util.h"
+
+#include <QSignalSpy>
+#include <QUuid>
 
 #include <memory>
 
@@ -25,11 +30,71 @@ JsonRpcClient::JsonRpcClient(JsonRpcSocketPtr socket,
 
     connect(m_endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
             this, &JsonRpcClient::socketDisconnected);
+
+    connect(m_endpoint.get(), &JsonRpcEndpoint::socketError,
+            this, &JsonRpcClient::socketError);
 }
 
 JsonRpcClient::~JsonRpcClient()
 {
     disconnectFromServer();
+}
+
+JsonRpcResultPtr
+JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
+{
+    m_last_result = QVariant();
+    m_last_error = JsonRpcError();
+
+    connect(request, &JsonRpcRequest::result,
+            this, &JsonRpcClient::syncCallResult);
+
+    connect(request, &JsonRpcRequest::error,
+            this, &JsonRpcClient::syncCallError);
+
+    QSignalSpy res_spy(this, &JsonRpcClient::syncCallSucceeded);
+    QSignalSpy err_spy(this, &JsonRpcClient::syncCallFailed);
+    QTime timer;
+    timer.start();
+    while (res_spy.isEmpty() && err_spy.isEmpty() &&
+           timer.elapsed() < CallTimeout) {
+        QCoreApplication::processEvents();
+    }
+    if (!res_spy.isEmpty()) {
+        return std::make_shared<JsonRpcSuccess>(m_last_result);
+    } else if (!err_spy.isEmpty()) {
+        return std::make_shared<JsonRpcError>(m_last_error);
+    } else {
+        return std::make_shared<JsonRpcError>(
+            JsonRpcError::EC_InternalError,
+            "RPC call timed out"
+        );
+    }
+}
+
+JsonRpcResultPtr JsonRpcClient::callExpandArgs(const QString& method,
+                                               const QVariantList& params)
+{
+    RequestPtr req = callAsyncExpandArgs(method, params);
+    return waitForSyncCallbacks(req.get());
+}
+
+JsonRpcClient::RequestPtr
+JsonRpcClient::callAsyncExpandArgs(const QString& method,
+                                   const QVariantList& params)
+{
+    RequestPtr request;
+    QJsonObject req_json_obj;
+    std::tie(request, req_json_obj) = prepareCall(method);
+
+    if (params.size() > 0) {
+        req_json_obj["params"] = QJsonArray::fromVariantList(params);
+    }
+
+    m_logger->logInfo(getCallLogMessage(method, params));
+    m_endpoint->send(QJsonDocument(req_json_obj));
+
+    return request;
 }
 
 std::pair<JsonRpcClient::RequestPtr, QJsonObject>
@@ -112,6 +177,20 @@ int JsonRpcClient::serverPort() const
     return m_endpoint->peerPort();
 }
 
+void JsonRpcClient::syncCallResult(const QVariant& result)
+{
+    m_last_result = result;
+    emit syncCallSucceeded();
+}
+
+void JsonRpcClient::syncCallError(int code,
+                                  const QString& message,
+                                  const QVariant& data)
+{
+    m_last_error = JsonRpcError(code, message, data);
+    emit syncCallFailed();
+}
+
 void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
 {
     JCON_ASSERT(response["jsonrpc"].toString() == "2.0");
@@ -136,7 +215,7 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
                                  "request: %1").arg(id));
                 return;
             }
-            emit it->second->handleError(code, msg, data);
+            emit it->second->error(code, msg, data);
             m_outstanding_requests.erase(it);
         }
 
@@ -162,7 +241,7 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
         return;
     }
 
-    emit it->second->handleResult(result);
+    emit it->second->result(result);
     m_outstanding_requests.erase(it);
 }
 
@@ -175,6 +254,13 @@ void JsonRpcClient::getJsonErrorInfo(const QJsonObject& response,
     code = error["code"].toInt();
     message = error["message"].toString("unknown error");
     data = error.value("data").toVariant();
+}
+
+QString JsonRpcClient::getCallLogMessage(const QString& method,
+                                         const QVariantList& params)
+{
+    return QString("Calling RPC method: '%1' with arguments: %2")
+        .arg(method).arg(variantListToString(params));
 }
 
 void JsonRpcClient::logError(const QString& msg)

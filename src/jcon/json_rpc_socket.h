@@ -33,6 +33,7 @@ signals:
     void dataReceived(const QByteArray& bytes, QObject* socket);
     void socketConnected(QObject* socket);
     void socketDisconnected(QObject* socket);
+    void socketError(QObject* socket, QAbstractSocket::SocketError error);
 };
 
 typedef std::shared_ptr<JsonRpcSocket> JsonRpcSocketPtr;

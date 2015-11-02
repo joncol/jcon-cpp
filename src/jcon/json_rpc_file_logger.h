@@ -2,17 +2,18 @@
 #define JSON_RPC_FILE_LOGGER_H
 
 #include "json_rpc_logger.h"
+#include "jcon.h"
 
 #include <QFile>
 #include <QTextStream>
 
 namespace jcon {
 
-class JsonRpcFileLogger : public JsonRpcLogger
+class JCON_API JsonRpcFileLogger : public JsonRpcLogger
 {
 public:
     JsonRpcFileLogger(const QString& filename);
-    ~JsonRpcFileLogger() override;
+    virtual ~JsonRpcFileLogger();
 
     void logInfo(const QString& message) override;
     void logWarning(const QString& message) override;

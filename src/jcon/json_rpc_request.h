@@ -19,8 +19,8 @@ public:
     virtual ~JsonRpcRequest();
 
 signals:
-    void handleResult(const QVariant& result);
-    void handleError(int code, const QString& message, const QVariant& data);
+    void result(const QVariant& result);
+    void error(int code, const QString& message, const QVariant& data);
 
 private:
     QString m_id;

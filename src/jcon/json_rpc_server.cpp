@@ -1,5 +1,6 @@
 #include "json_rpc_server.h"
 #include "json_rpc_endpoint.h"
+#include "json_rpc_error.h"
 #include "json_rpc_file_logger.h"
 #include "jcon_assert.h"
 
@@ -59,7 +60,9 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
         // send error response if request had valid ID
         if (request_id != InvalidRequestId) {
             QJsonDocument error =
-                createErrorResponse(request_id, EC_MethodNotFound, msg);
+                createErrorResponse(request_id,
+                                    JsonRpcError::EC_MethodNotFound,
+                                    msg);
 
             JsonRpcEndpoint* endpoint = findClient(socket);
             if (!endpoint) {
@@ -324,7 +327,9 @@ QJsonDocument JsonRpcServer::createResponse(const QString& request_id,
             .arg(method_name)
             .arg(return_value.type());
         logError(msg);
-        return createErrorResponse(request_id, EC_InvalidRequest, msg);
+        return createErrorResponse(request_id,
+                                   JsonRpcError::EC_InvalidRequest,
+                                   msg);
     }
 
     return QJsonDocument(res_json_obj);

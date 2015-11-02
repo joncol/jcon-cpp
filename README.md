@@ -71,32 +71,52 @@ rpc_client->connectToServer("127.0.0.1", 6001);
 as long as a parent `QObject` is provided.)
 
 
-### Invoking a Remote Method
+### Invoking a Remote Method Asynchronously
 
 ```c++
-jcon::JsonRpcClient::RequestPtr req = rpc_client->call("getRandomInt", 10);
+jcon::JsonRpcRequestPtr req = rpc_client->callAsync("getRandomInt", 10);
 ```
 
-The returned `RequestPtr` can be used to set up a callback that is invoked when
-the result of the JSON RPC call is ready:
+The returned `JsonRpcRequestPtr` can be used to set up a callback that is
+invoked when the result of the JSON RPC call is ready:
 
 ```c++
-req->connect(req.get(), &jcon::JsonRpcRequest::handleResult,
+req->connect(req.get(), &jcon::JsonRpcRequest::result,
              [](const QVariant& result) {
                  qDebug() << "result of RPC call:" << result;
                  qApp->exit();
              });
 ```
 
-If you want to handle errors:
+To handle errors:
 
 ```c++
-req->connect(req.get(), &jcon::JsonRpcRequest::handleError,
+req->connect(req.get(), &jcon::JsonRpcRequest::error,
              [](int code, const QString& message, const QVariant& data) {
                  qDebug() << "RPC error: " << message << " (" << code << ")";
                  qApp->exit();
              });
 ```
+
+
+### Invoking a Remote Method Synchronously
+
+```c++
+jcon::JsonRpcResult result = rpc_client->call("getRandomInt", 10);
+
+if (result.isSuccess()) {
+    QVariant res = result.result();
+} else {
+    jcon::JsonRpcError error = rpc_client->lastError();
+    QString err_str = error.toString();
+}
+```
+
+
+### Expanding a List of Arguments
+
+If you want to expand a list of arguments (instead of passing the list as a
+single argument), use `callExpandArgs` and `callAsyncExpandArgs`.
 
 
 ## Known Issues

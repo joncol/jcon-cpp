@@ -4,7 +4,7 @@
 #include "jcon.h"
 #include "json_rpc_logger.h"
 
-#include <QObject>
+#include <QAbstractSocket>
 
 #include <memory>
 
@@ -29,6 +29,10 @@ public:
 protected:
     virtual JsonRpcEndpoint* findClient(QObject* socket) = 0;
 
+signals:
+    /// Emitted when the RPC socket has an error.
+    void socketError(QObject* socket, QAbstractSocket::SocketError error);
+
 public slots:
     void jsonRequestReceived(const QJsonObject& request, QObject* socket);
 
@@ -43,14 +47,6 @@ protected:
 
 private:
     static const QString InvalidRequestId;
-
-    enum ErrorCodes {
-        EC_ParseError = -32700,
-        EC_InvalidRequest = -32600,
-        EC_MethodNotFound = -32601,
-        EC_InvalidParams = -32602,
-        EC_InternalError = -32603
-    };
 
     bool dispatch(const QString& method_name,
                   const QVariant& params,

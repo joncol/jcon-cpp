@@ -26,6 +26,9 @@ JsonRpcEndpoint::JsonRpcEndpoint(JsonRpcSocketPtr socket,
 
     connect(m_socket.get(), &JsonRpcSocket::dataReceived,
             this, &JsonRpcEndpoint::dataReceived);
+
+    connect(m_socket.get(), &JsonRpcSocket::socketError,
+            this, &JsonRpcEndpoint::socketError);
 }
 
 JsonRpcEndpoint::~JsonRpcEndpoint()
@@ -35,6 +38,9 @@ JsonRpcEndpoint::~JsonRpcEndpoint()
 
 bool JsonRpcEndpoint::connectToHost(const QString& host, int port, int msecs)
 {
+    m_logger->logInfo(QString("connecting to JSON RPC server at %1:%2")
+                      .arg(host).arg(port));
+
     m_socket->connectToHost(host, port);
 
     if (!m_socket->waitForConnected(msecs)) {

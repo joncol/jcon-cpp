@@ -4,7 +4,7 @@
 #include <jcon/json_rpc_tcp_client.h>
 #include <jcon/json_rpc_tcp_server.h>
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QPushButton>
 #include <QThread>
 
@@ -26,34 +26,45 @@ jcon::JsonRpcClientPtr startClient(QObject* parent)
     return rpc_client;
 }
 
-void invokeMethod(jcon::JsonRpcClient* rpc_client)
+void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
 {
     qsrand(time(nullptr));
 
-    jcon::JsonRpcClient::RequestPtr req = rpc_client->call("getRandomInt", 10);
+    jcon::JsonRpcClient::RequestPtr req =
+        rpc_client->callAsync("getRandomInt", 10);
 
-    req->connect(req.get(), &jcon::JsonRpcRequest::handleResult,
+    req->connect(req.get(), &jcon::JsonRpcRequest::result,
                  [](const QVariant& result) {
-                     qDebug() << "result of RPC call: " << result;
-                     qApp->exit();
+                     qDebug() << "result of asynchronous RPC call:" << result;
                  });
 
-    req->connect(req.get(), &jcon::JsonRpcRequest::handleError,
+    req->connect(req.get(), &jcon::JsonRpcRequest::error,
                  [](int code, const QString& message, const QVariant& data) {
-                     qDebug() << "RPC error: " << message
+                     qDebug() << "RPC error:" << message
                               << " (" << code << ")";
-                     qApp->exit();
                  });
+}
+
+void invokeMethodSync(jcon::JsonRpcClient* rpc_client)
+{
+    qsrand(time(nullptr));
+
+    jcon::JsonRpcResultPtr result = rpc_client->call("getRandomInt", 10);
+
+    if (result->isSuccess()) {
+        qDebug() << "result of synchronous RPC call:" << result->result();
+    } else {
+        qDebug() << "RPC error:" << result->toString();
+    }
 }
 
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+    QCoreApplication app(argc, argv);
 
     startServer(&app);
     auto rpc_client = startClient(&app);
 
-    invokeMethod(rpc_client.get());
-
-    return app.exec();
+    invokeMethodAsync(rpc_client.get());
+    invokeMethodSync(rpc_client.get());
 }

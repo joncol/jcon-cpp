@@ -36,6 +36,13 @@ void JsonRpcTcpSocket::setupSocket()
 
     connect(m_socket, &QTcpSocket::readyRead,
             this, &JsonRpcTcpSocket::dataReady);
+
+    void (QAbstractSocket::*errorPtr)(QAbstractSocket::SocketError) =
+        &QAbstractSocket::error;
+    connect(m_socket, errorPtr, this,
+            [this](QAbstractSocket::SocketError error) {
+                emit socketError(m_socket, error);
+            });
 }
 
 void JsonRpcTcpSocket::connectToHost(QString host, int port)

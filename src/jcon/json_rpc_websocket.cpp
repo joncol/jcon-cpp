@@ -27,12 +27,23 @@ JsonRpcWebSocket::~JsonRpcWebSocket()
 
 void JsonRpcWebSocket::setupSocket()
 {
-    connect(m_socket, &QWebSocket::textMessageReceived,
-            this, &JsonRpcWebSocket::dataReady);
+    connect(m_socket, &QWebSocket::connected, [this]() {
+        emit socketConnected(m_socket);
+    });
 
     connect(m_socket, &QWebSocket::disconnected, [this]() {
         emit socketDisconnected(m_socket);
     });
+
+    connect(m_socket, &QWebSocket::textMessageReceived,
+            this, &JsonRpcWebSocket::dataReady);
+
+    void (QWebSocket::*errorPtr)(QAbstractSocket::SocketError) =
+        &QWebSocket::error;
+    connect(m_socket, errorPtr, this,
+            [this](QAbstractSocket::SocketError error) {
+                emit socketError(m_socket, error);
+            });
 }
 
 void JsonRpcWebSocket::connectToHost(QString host, int port)

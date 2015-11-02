@@ -1,16 +1,19 @@
 #ifndef JSON_RPC_LOGGER_H
 #define JSON_RPC_LOGGER_H
 
+#include "jcon.h"
+
 #include <memory>
 
 class QString;
 
 namespace jcon {
 
-class JsonRpcLogger
+class JCON_API JsonRpcLogger
 {
 public:
-    virtual ~JsonRpcLogger() {}
+    JsonRpcLogger();
+    virtual ~JsonRpcLogger();
 
     virtual void logInfo(const QString& message) = 0;
     virtual void logWarning(const QString& message) = 0;

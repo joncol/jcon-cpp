@@ -55,6 +55,9 @@ signals:
     /// Emitted when the underlying socket is disconnected.
     void socketDisconnected(QObject* socket);
 
+    /// Emitted when the underlying socket has an error.
+    void socketError(QObject* socket, QAbstractSocket::SocketError error);
+
 private slots:
     void dataReceived(const QByteArray& bytes, QObject* socket);
 
