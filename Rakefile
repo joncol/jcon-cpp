@@ -4,6 +4,7 @@ task default: :copy_changed_files
 
 desc 'Copy changed source files from ORZ_TOP'
 task :copy_changed_files do
+  fail 'Environment variable ORZ_TOP must be set' if ENV['ORZ_TOP'].nil?
   orz_top = ENV['ORZ_TOP'].gsub('\\', '/')
   fail 'ORZ_TOP not set' unless orz_top
   dir_name = 'changed_source_files'
@@ -14,7 +15,9 @@ task :copy_changed_files do
 
   src_dir = File.join(orz_top, 'Libs', 'OrzJsonRpc', 'src', 'OrzJsonRpc')
 
-  Dir[File.join(src_dir, '*.{cpp,h}')].reject { |n| n =~ /pch/ }.each do |file|
+  Dir[File.join(src_dir, '*.{cpp,h}')]
+    .reject { |n| n =~ /pch/ }
+    .reject { |n| n =~ /jcon_assert\.h/}.each do |file|
     basename = File.basename(file)
     dest_file = File.join(temp_dir, basename)
     FileUtils.cp(file, dest_file)
