@@ -75,15 +75,14 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
 JsonRpcResultPtr JsonRpcClient::callExpandArgs(const QString& method,
                                                const QVariantList& params)
 {
-    RequestPtr req = callAsyncExpandArgs(method, params);
+    JsonRpcRequestPtr req = callAsyncExpandArgs(method, params);
     return waitForSyncCallbacks(req.get());
 }
 
-JsonRpcClient::RequestPtr
-JsonRpcClient::callAsyncExpandArgs(const QString& method,
-                                   const QVariantList& params)
+JsonRpcRequestPtr JsonRpcClient::callAsyncExpandArgs(const QString& method,
+                                                     const QVariantList& params)
 {
-    RequestPtr request;
+    JsonRpcRequestPtr request;
     QJsonObject req_json_obj;
     std::tie(request, req_json_obj) = prepareCall(method);
 
@@ -97,10 +96,10 @@ JsonRpcClient::callAsyncExpandArgs(const QString& method,
     return request;
 }
 
-std::pair<JsonRpcClient::RequestPtr, QJsonObject>
+std::pair<JsonRpcRequestPtr, QJsonObject>
 JsonRpcClient::prepareCall(const QString& method)
 {
-    RequestPtr request;
+    JsonRpcRequestPtr request;
     RequestId id;
     std::tie(request, id) = createRequest();
     m_outstanding_requests[id] = request;
@@ -108,7 +107,7 @@ JsonRpcClient::prepareCall(const QString& method)
     return std::make_pair(request, req_json_obj);
 }
 
-std::pair<JsonRpcClient::RequestPtr, JsonRpcClient::RequestId>
+std::pair<JsonRpcRequestPtr, JsonRpcClient::RequestId>
 JsonRpcClient::createRequest()
 {
     auto id = createUuid();

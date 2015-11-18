@@ -307,14 +307,14 @@ QJsonDocument JsonRpcServer::createResponse(const QString& request_id,
         { "id", request_id }
     };
 
-    // TODO: is there a cleaner way of doing this?
-
-    if (return_value.type() == QVariant::List) {
-       auto ret_doc = QJsonDocument::fromVariant(return_value);
-       res_json_obj["result"] = ret_doc.array();
+    if (return_value.type() == QVariant::Invalid) {
+        res_json_obj["result"] = QJsonValue();
+    } else if (return_value.type() == QVariant::List) {
+        auto ret_doc = QJsonDocument::fromVariant(return_value);
+        res_json_obj["result"] = ret_doc.array();
     } else if (return_value.type() == QVariant::Map) {
-       auto ret_doc = QJsonDocument::fromVariant(return_value);
-       res_json_obj["result"] = ret_doc.object();
+        auto ret_doc = QJsonDocument::fromVariant(return_value);
+        res_json_obj["result"] = ret_doc.object();
     } else if (return_value.type() == QVariant::Int) {
         res_json_obj["result"] = return_value.toInt();
     } else if (return_value.type() == QVariant::Double) {

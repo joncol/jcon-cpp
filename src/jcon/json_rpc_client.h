@@ -26,7 +26,6 @@ class JCON_API JsonRpcClient : public QObject
 
 public:
     typedef QString RequestId;
-    typedef std::shared_ptr<JsonRpcRequest> RequestPtr;
 
     JsonRpcClient(JsonRpcSocketPtr socket,
                   QObject* parent = nullptr,
@@ -48,17 +47,16 @@ public:
     JsonRpcResultPtr call(const QString& method, T&&... params);
 
     template<typename... T>
-    RequestPtr callAsync(const QString& method, T&&... params);
+    JsonRpcRequestPtr callAsync(const QString& method, T&&... params);
 
     /// Expand arguments in list before making the RPC call
     JsonRpcResultPtr callExpandArgs(const QString& method,
                                     const QVariantList& params);
 
     /// Expand arguments in list before making the RPC call
-    RequestPtr callAsyncExpandArgs(const QString& method,
-                                   const QVariantList& params);
+    JsonRpcRequestPtr callAsyncExpandArgs(const QString& method,
+                                          const QVariantList& params);
 
-    bool lastCallSucceeded() const { return m_last_call_succeeded; }
     JsonRpcError lastError() const { return m_last_error; }
 
 signals:
@@ -91,11 +89,15 @@ private:
 
     JsonRpcResultPtr waitForSyncCallbacks(const JsonRpcRequest* request);
 
-    std::pair<RequestPtr, QJsonObject> prepareCall(const QString& method);
-    std::pair<RequestPtr, RequestId> createRequest();
+    std::pair<JsonRpcRequestPtr, QJsonObject>
+        prepareCall(const QString& method);
+
+    std::pair<JsonRpcRequestPtr, RequestId> createRequest();
     static RequestId createUuid();
     QJsonObject createRequestJsonObject(const QString& method,
                                         const QString& id);
+
+    void convertToQVariantList(QVariantList& result) {}
 
     template<typename T>
     void convertToQVariantList(QVariantList& result, T&& x);
@@ -108,12 +110,11 @@ private:
                                  QString& message,
                                  QVariant& data);
 
-    typedef std::map<RequestId, RequestPtr> RequestMap;
+    typedef std::map<RequestId, JsonRpcRequestPtr> RequestMap;
 
     JsonRpcLoggerPtr m_logger;
     JsonRpcEndpointPtr m_endpoint;
     RequestMap m_outstanding_requests;
-    bool m_last_call_succeeded;
     QVariant m_last_result;
     JsonRpcError m_last_error;
 };
@@ -123,23 +124,21 @@ typedef std::shared_ptr<JsonRpcClient> JsonRpcClientPtr;
 template<typename... T>
 JsonRpcResultPtr JsonRpcClient::call(const QString& method, T&&... params)
 {
-    RequestPtr req = callAsync(method, std::forward<T>(params)...);
+    JsonRpcRequestPtr req = callAsync(method, std::forward<T>(params)...);
     return waitForSyncCallbacks(req.get());
 }
 
 template<typename... T>
-JsonRpcClient::RequestPtr JsonRpcClient::callAsync(const QString& method,
-                                                   T&&... params)
+JsonRpcRequestPtr JsonRpcClient::callAsync(const QString& method,
+                                           T&&... params)
 {
-    RequestPtr request;
+    JsonRpcRequestPtr request;
     QJsonObject req_json_obj;
     std::tie(request, req_json_obj) = prepareCall(method);
 
     QVariantList param_list;
-    if (sizeof...(T) > 0) {
-        convertToQVariantList(param_list, std::forward<T>(params)...);
-        req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
-    }
+    convertToQVariantList(param_list, std::forward<T>(params)...);
+    req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
 
     m_logger->logInfo(getCallLogMessage(method, param_list));
     m_endpoint->send(QJsonDocument(req_json_obj));
