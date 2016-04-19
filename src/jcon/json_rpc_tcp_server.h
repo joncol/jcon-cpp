@@ -18,10 +18,11 @@ class JCON_API JsonRpcTcpServer : public JsonRpcServer
 
 public:
     JsonRpcTcpServer(QObject* parent = nullptr,
-                     JsonRpcLoggerPtr logger = nullptr);
+                     std::shared_ptr<JsonRpcLogger> logger = nullptr);
     virtual ~JsonRpcTcpServer();
 
     void listen(int port) override;
+    void listen(const QHostAddress& addr, int port) override;
     void close() override;
 
 protected:
@@ -32,13 +33,13 @@ private slots:
     void newConnection() override;
 
     /// Called when the underlying QTcpServer loses a client connection.
-    void clientDisconnected(QObject* client_socket) override;
+    void disconnectClient(QObject* client_socket) override;
 
 private:
     QTcpServer m_server;
 
     /// Clients are uniquely identified by their QTcpSocket*.
-    std::map<QTcpSocket*, JsonRpcEndpointPtr> m_client_endpoints;
+    std::map<QTcpSocket*, std::shared_ptr<JsonRpcEndpoint>> m_client_endpoints;
 };
 
 }

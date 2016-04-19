@@ -1,6 +1,11 @@
 #ifndef JSON_RPC_RESULT_H
 #define JSON_RPC_RESULT_H
 
+#include "jcon.h"
+
+#include <QString>
+#include <QVariant>
+
 namespace jcon {
 
 class JCON_API JsonRpcResult
@@ -12,8 +17,6 @@ public:
     virtual QVariant result() const = 0;
     virtual QString toString() const = 0;
 };
-
-typedef std::shared_ptr<JsonRpcResult> JsonRpcResultPtr;
 
 }
 

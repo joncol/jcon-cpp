@@ -7,8 +7,9 @@
 
 namespace jcon {
 
-JsonRpcWebSocketServer::JsonRpcWebSocketServer(QObject* parent,
-                                               JsonRpcLoggerPtr logger)
+JsonRpcWebSocketServer::JsonRpcWebSocketServer(
+    QObject* parent,
+    std::shared_ptr<JsonRpcLogger> logger)
     : JsonRpcServer(parent, logger)
     , m_server(new QWebSocketServer("JSON RPC WebSocket server",
                                     QWebSocketServer::NonSecureMode,
@@ -30,6 +31,13 @@ void JsonRpcWebSocketServer::listen(int port)
 {
     logInfo(QString("listening on port %2").arg(port));
     m_server->listen(QHostAddress::Any, port);
+}
+
+
+void JsonRpcWebSocketServer::listen(const QHostAddress& addr, int port)
+{
+    logInfo(QString("listening on port %2").arg(port));
+    m_server->listen(addr, port);
 }
 
 void JsonRpcWebSocketServer::close()
@@ -66,17 +74,18 @@ void JsonRpcWebSocketServer::newConnection()
             std::make_shared<JsonRpcEndpoint>(rpc_socket, log(), this);
 
         connect(endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
-                this, &JsonRpcWebSocketServer::clientDisconnected);
+                this, &JsonRpcWebSocketServer::disconnectClient);
 
         connect(endpoint.get(), &JsonRpcEndpoint::jsonObjectReceived,
                 this, &JsonRpcServer::jsonRequestReceived);
 
         m_client_endpoints[web_socket] = endpoint;
+        emit(clientConnected(web_socket));
         // }
     }
 }
 
-void JsonRpcWebSocketServer::clientDisconnected(QObject* client_socket)
+void JsonRpcWebSocketServer::disconnectClient(QObject* client_socket)
 {
     QWebSocket* socket = qobject_cast<QWebSocket*>(client_socket);
     JCON_ASSERT(socket);
@@ -93,6 +102,7 @@ void JsonRpcWebSocketServer::clientDisconnected(QObject* client_socket)
         return;
     }
     m_client_endpoints.erase(it);
+    emit(clientDisconnected(client_socket));
 }
 
 }

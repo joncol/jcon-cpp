@@ -27,11 +27,11 @@ JsonRpcWebSocket::~JsonRpcWebSocket()
 
 void JsonRpcWebSocket::setupSocket()
 {
-    connect(m_socket, &QWebSocket::connected, [this]() {
+    connect(m_socket, &QWebSocket::connected, this, [this]() {
         emit socketConnected(m_socket);
     });
 
-    connect(m_socket, &QWebSocket::disconnected, [this]() {
+    connect(m_socket, &QWebSocket::disconnected, this, [this]() {
         emit socketDisconnected(m_socket);
     });
 

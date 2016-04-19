@@ -19,10 +19,11 @@ class JCON_API JsonRpcWebSocketServer : public JsonRpcServer
 
 public:
     JsonRpcWebSocketServer(QObject* parent = nullptr,
-                           JsonRpcLoggerPtr logger = nullptr);
+                           std::shared_ptr<JsonRpcLogger> logger = nullptr);
     virtual ~JsonRpcWebSocketServer();
 
     void listen(int port) override;
+    void listen(const QHostAddress& addr, int port) override;
     void close() override;
 
 protected:
@@ -34,13 +35,13 @@ private slots:
     void newConnection() override;
 
     /// Called when the underlying QWebSocketServer loses a client connection.
-    void clientDisconnected(QObject* client_socket) override;
+    void disconnectClient(QObject* client_socket) override;
 
 private:
     QWebSocketServer* m_server;
 
     /// Clients are uniquely identified by their QWebSocket*.
-    std::map<QWebSocket*, JsonRpcEndpointPtr> m_client_endpoints;
+    std::map<QWebSocket*, std::shared_ptr<JsonRpcEndpoint>> m_client_endpoints;
 };
 
 }

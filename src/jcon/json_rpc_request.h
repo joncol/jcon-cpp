@@ -27,8 +27,6 @@ private:
     QDateTime m_timestamp;
 };
 
-typedef std::shared_ptr<JsonRpcRequest> JsonRpcRequestPtr;
-
 }
 
 #endif

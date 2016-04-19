@@ -14,22 +14,18 @@ namespace jcon {
 
 const QString JsonRpcServer::InvalidRequestId = "";
 
-JsonRpcServer::JsonRpcServer(QObject* parent, JsonRpcLoggerPtr logger)
+JsonRpcServer::JsonRpcServer(QObject* parent,
+                             std::shared_ptr<JsonRpcLogger> logger)
     : QObject(parent)
     , m_logger(logger)
 {
     if (!m_logger) {
-        m_logger = std::make_shared<JsonRpcFileLogger>("server_log.txt");
+        m_logger = std::make_shared<JsonRpcFileLogger>("json_server_log.txt");
     }
 }
 
 JsonRpcServer::~JsonRpcServer()
 {
-}
-
-void JsonRpcServer::registerService(QObject* service)
-{
-    m_services.push_back(std::shared_ptr<QObject>(service));
 }
 
 void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
@@ -95,7 +91,7 @@ bool JsonRpcServer::dispatch(const QString& method_name,
                              const QString& request_id,
                              QVariant& return_value)
 {
-    for (auto s : m_services) {
+    for (auto& s : m_services) {
         const QMetaObject* meta_obj = s->metaObject();
         for (int i = 0; i < meta_obj->methodCount(); ++i) {
             auto meta_method = meta_obj->method(i);
@@ -125,7 +121,6 @@ bool JsonRpcServer::dispatch(const QString& method_name,
     return false;
 }
 
-// based on https://gist.github.com/andref/2838534.
 bool JsonRpcServer::call(QObject* object,
                          const QMetaMethod& meta_method,
                          const QVariantList& args,
@@ -239,6 +234,7 @@ bool JsonRpcServer::convertArgs(const QMetaMethod& meta_method,
     return true;
 }
 
+// based on https://gist.github.com/andref/2838534.
 bool JsonRpcServer::doCall(QObject* object,
                            const QMetaMethod& meta_method,
                            QVariantList& converted_args,

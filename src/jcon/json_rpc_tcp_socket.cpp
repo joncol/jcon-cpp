@@ -26,20 +26,20 @@ void JsonRpcTcpSocket::setupSocket()
     m_socket->setSocketOption(QAbstractSocket::LowDelayOption, "1");
     m_socket->setSocketOption(QAbstractSocket::KeepAliveOption, "1");
 
-    connect(m_socket, &QTcpSocket::connected, [this]() {
+    connect(m_socket, &QTcpSocket::connected, this, [this]() {
         emit socketConnected(m_socket);
     });
 
-    connect(m_socket, &QTcpSocket::disconnected, [this]() {
+    connect(m_socket, &QTcpSocket::disconnected, this, [this]() {
         emit socketDisconnected(m_socket);
     });
 
     connect(m_socket, &QTcpSocket::readyRead,
             this, &JsonRpcTcpSocket::dataReady);
 
-    void (QAbstractSocket::*errorPtr)(QAbstractSocket::SocketError) =
+    void (QAbstractSocket::*errorFun)(QAbstractSocket::SocketError) =
         &QAbstractSocket::error;
-    connect(m_socket, errorPtr, this,
+    connect(m_socket, errorFun, this,
             [this](QAbstractSocket::SocketError error) {
                 emit socketError(m_socket, error);
             });

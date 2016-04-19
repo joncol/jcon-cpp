@@ -6,8 +6,6 @@
 #include <QHostAddress>
 #include <QObject>
 
-#include <memory>
-
 namespace jcon {
 
 class JCON_API JsonRpcSocket : public QObject
@@ -35,8 +33,6 @@ signals:
     void socketDisconnected(QObject* socket);
     void socketError(QObject* socket, QAbstractSocket::SocketError error);
 };
-
-typedef std::shared_ptr<JsonRpcSocket> JsonRpcSocketPtr;
 
 }
 

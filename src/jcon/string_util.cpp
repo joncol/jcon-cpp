@@ -15,7 +15,7 @@ QString variantListToString(const QVariantList& l, const QString& sep)
             str_list.push_back(QString("map (%1 elements)")
                                .arg(e.toMap().size()));
         } else if (e.canConvert<QString>()) {
-            str_list.push_back(e.toString());
+            str_list.push_back("\"" + e.toString() + "\"");
         } else {
             str_list.push_back("N/A");
         }

@@ -3,8 +3,6 @@
 
 #include "jcon.h"
 
-#include <memory>
-
 class QString;
 
 namespace jcon {
@@ -19,8 +17,6 @@ public:
     virtual void logWarning(const QString& message) = 0;
     virtual void logError(const QString& message) = 0;
 };
-
-typedef std::shared_ptr<JsonRpcLogger> JsonRpcLoggerPtr;
 
 }
 

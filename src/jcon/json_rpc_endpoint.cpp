@@ -11,8 +11,8 @@ namespace jcon {
 /// Remove \p n bytes from \p bytes.
 static QByteArray chopLeft(const QByteArray& bytes, int n);
 
-JsonRpcEndpoint::JsonRpcEndpoint(JsonRpcSocketPtr socket,
-                                 JsonRpcLoggerPtr logger,
+JsonRpcEndpoint::JsonRpcEndpoint(std::shared_ptr<JsonRpcSocket> socket,
+                                 std::shared_ptr<JsonRpcLogger> logger,
                                  QObject* parent)
     : QObject(parent)
     , m_logger(logger)
@@ -25,7 +25,7 @@ JsonRpcEndpoint::JsonRpcEndpoint(JsonRpcSocketPtr socket,
             this, &JsonRpcEndpoint::socketDisconnected);
 
     connect(m_socket.get(), &JsonRpcSocket::dataReceived,
-            this, &JsonRpcEndpoint::dataReceived);
+            this, &JsonRpcEndpoint::dataReady);
 
     connect(m_socket.get(), &JsonRpcSocket::socketError,
             this, &JsonRpcEndpoint::socketError);
@@ -95,7 +95,7 @@ void JsonRpcEndpoint::send(const QJsonDocument& doc)
     m_socket->send(bytes);
 }
 
-void JsonRpcEndpoint::dataReceived(const QByteArray& bytes, QObject* socket)
+void JsonRpcEndpoint::dataReady(const QByteArray& bytes, QObject* socket)
 {
     JCON_ASSERT(bytes.length() > 0);
     m_recv_buffer += bytes;

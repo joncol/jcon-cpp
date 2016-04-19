@@ -23,8 +23,8 @@ class JCON_API JsonRpcEndpoint : public QObject
     Q_OBJECT
 
 public:
-    JsonRpcEndpoint(JsonRpcSocketPtr socket,
-                    JsonRpcLoggerPtr logger,
+    JsonRpcEndpoint(std::shared_ptr<JsonRpcSocket> socket,
+                    std::shared_ptr<JsonRpcLogger> logger,
                     QObject* parent = nullptr);
     virtual ~JsonRpcEndpoint();
 
@@ -59,19 +59,17 @@ signals:
     void socketError(QObject* socket, QAbstractSocket::SocketError error);
 
 private slots:
-    void dataReceived(const QByteArray& bytes, QObject* socket);
+    void dataReady(const QByteArray& bytes, QObject* socket);
 
 private:
     /** Check buffer for complete JSON objects, and emit jsonObjectReceived for
         each one. */
     QByteArray processBuffer(const QByteArray& buf, QObject* socket);
 
-    JsonRpcLoggerPtr m_logger;
-    JsonRpcSocketPtr m_socket;
+    std::shared_ptr<JsonRpcLogger> m_logger;
+    std::shared_ptr<JsonRpcSocket> m_socket;
     QByteArray m_recv_buffer;
 };
-
-typedef std::shared_ptr<JsonRpcEndpoint> JsonRpcEndpointPtr;
 
 }
 

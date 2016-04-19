@@ -27,7 +27,7 @@ class ExampleService : public QObject
     Q_OBJECT
 
 public:
-    ExampleService();
+    ExampleService(QObject* parent = nullptr);
     virtual ~ExampleService();
 
     Q_INVOKABLE int getRandomInt(int limit);
@@ -42,12 +42,12 @@ types such as `QString`, `bool`, `int`, `float`, etc.
 Register your service with:
 
 ```c++
-auto service = new ExampleService;
-rpc_server->registerService(service);
+rpc_server->registerServices(std::move(std::make_unique<ExampleService>()));
 ```
 
-The server will store a collection of smart pointers so it will take care of
-releasing the memory allocated above.
+The server will take over ownership of the `unique_ptr`, and the memory will be
+freed at shutdown. You can pass as many services as you want as arguments to the
+`registerServices` method.
 
 Finally, start listening for client connections by:
 
@@ -63,12 +63,12 @@ Specify whatever port you want to use.
 Simple:
 
 ```c++
-auto rpc_client = std::make_shared<jcon::JsonRpcTcpClient>(parent);
+auto rpc_client = new jcon::JsonRpcTcpClient(parent);
 rpc_client->connectToServer("127.0.0.1", 6001);
 ```
 
-(No real need to use a smart pointer here, since the destructor will be called
-as long as a parent `QObject` is provided.)
+(No need to use a smart pointer here, since the destructor will be called as
+long as a non-null parent `QObject` is provided.)
 
 
 ### Invoking a Remote Method Asynchronously

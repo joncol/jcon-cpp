@@ -11,7 +11,7 @@ class JCON_API JsonRpcTcpClient : public JsonRpcClient
 
 public:
     JsonRpcTcpClient(QObject* parent = nullptr,
-                     JsonRpcLoggerPtr logger = nullptr);
+                     std::shared_ptr<JsonRpcLogger> logger = nullptr);
     virtual ~JsonRpcTcpClient();
 };
 

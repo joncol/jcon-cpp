@@ -13,14 +13,14 @@ namespace jcon {
 
 const QString JsonRpcClient::InvalidRequestId = "";
 
-JsonRpcClient::JsonRpcClient(JsonRpcSocketPtr socket,
+JsonRpcClient::JsonRpcClient(std::shared_ptr<JsonRpcSocket> socket,
                              QObject* parent,
-                             JsonRpcLoggerPtr logger)
+                             std::shared_ptr<JsonRpcLogger> logger)
     : QObject(parent)
     , m_logger(logger)
 {
     if (!m_logger) {
-        m_logger = std::make_shared<JsonRpcFileLogger>("client_log.txt");
+        m_logger = std::make_shared<JsonRpcFileLogger>("json_client_log.txt");
     }
 
     m_endpoint = std::make_shared<JsonRpcEndpoint>(socket, m_logger, this);
@@ -40,7 +40,7 @@ JsonRpcClient::~JsonRpcClient()
     disconnectFromServer();
 }
 
-JsonRpcResultPtr
+std::shared_ptr<JsonRpcResult>
 JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
 {
     m_last_result = QVariant();
@@ -72,17 +72,18 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
     }
 }
 
-JsonRpcResultPtr JsonRpcClient::callExpandArgs(const QString& method,
-                                               const QVariantList& params)
+std::shared_ptr<JsonRpcResult>
+JsonRpcClient::callExpandArgs(const QString& method, const QVariantList& params)
 {
-    JsonRpcRequestPtr req = callAsyncExpandArgs(method, params);
+    auto req = callAsyncExpandArgs(method, params);
     return waitForSyncCallbacks(req.get());
 }
 
-JsonRpcRequestPtr JsonRpcClient::callAsyncExpandArgs(const QString& method,
-                                                     const QVariantList& params)
+std::shared_ptr<JsonRpcRequest>
+JsonRpcClient::callAsyncExpandArgs(const QString& method,
+                                   const QVariantList& params)
 {
-    JsonRpcRequestPtr request;
+    std::shared_ptr<JsonRpcRequest> request;
     QJsonObject req_json_obj;
     std::tie(request, req_json_obj) = prepareCall(method);
 
@@ -96,10 +97,10 @@ JsonRpcRequestPtr JsonRpcClient::callAsyncExpandArgs(const QString& method,
     return request;
 }
 
-std::pair<JsonRpcRequestPtr, QJsonObject>
+std::pair<std::shared_ptr<JsonRpcRequest>, QJsonObject>
 JsonRpcClient::prepareCall(const QString& method)
 {
-    JsonRpcRequestPtr request;
+    std::shared_ptr<JsonRpcRequest> request;
     RequestId id;
     std::tie(request, id) = createRequest();
     m_outstanding_requests[id] = request;
@@ -107,7 +108,7 @@ JsonRpcClient::prepareCall(const QString& method)
     return std::make_pair(request, req_json_obj);
 }
 
-std::pair<JsonRpcRequestPtr, JsonRpcClient::RequestId>
+std::pair<std::shared_ptr<JsonRpcRequest>, JsonRpcClient::RequestId>
 JsonRpcClient::createRequest()
 {
     auto id = createUuid();

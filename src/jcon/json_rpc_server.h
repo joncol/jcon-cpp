@@ -18,19 +18,26 @@ class JCON_API JsonRpcServer : public QObject
     Q_OBJECT
 
 public:
-    JsonRpcServer(QObject* parent = nullptr, JsonRpcLoggerPtr logger = nullptr);
+    JsonRpcServer(QObject* parent = nullptr,
+                  std::shared_ptr<JsonRpcLogger> logger = nullptr);
     virtual ~JsonRpcServer();
 
-    virtual void registerService(QObject* service);
+    // takes any number of unique_ptrs to QObjects
+    template<typename T, typename... Ts>
+    void registerServices(T&& s, Ts&&... ss);
 
     virtual void listen(int port) = 0;
+    virtual void listen(const QHostAddress& addr, int port) = 0;
+
     virtual void close() = 0;
 
 protected:
     virtual JsonRpcEndpoint* findClient(QObject* socket) = 0;
 
 signals:
-    /// Emitted when the RPC socket has an error.
+    void clientConnected(QObject* client_socket);
+    void clientDisconnected(QObject* client_socket);
+
     void socketError(QObject* socket, QAbstractSocket::SocketError error);
 
 public slots:
@@ -38,15 +45,17 @@ public slots:
 
 protected slots:
     virtual void newConnection() = 0;
-    virtual void clientDisconnected(QObject* client_socket) = 0;
+    virtual void disconnectClient(QObject* client_socket) = 0;
 
 protected:
     void logInfo(const QString& msg);
     void logError(const QString& msg);
-    JsonRpcLoggerPtr log() { return m_logger; }
+    std::shared_ptr<JsonRpcLogger> log() { return m_logger; }
 
 private:
     static const QString InvalidRequestId;
+
+    void registerServices() {}
 
     bool dispatch(const QString& method_name,
                   const QVariant& params,
@@ -84,9 +93,16 @@ private:
                                       int code,
                                       const QString& message);
 
-    JsonRpcLoggerPtr m_logger;
-    std::vector<std::shared_ptr<QObject>> m_services;
+    std::shared_ptr<JsonRpcLogger> m_logger;
+    std::vector<std::unique_ptr<QObject>> m_services;
 };
+
+template<typename T, typename... Ts>
+void JsonRpcServer::registerServices(T&& s, Ts&&... ss)
+{
+    m_services.push_back(std::move(s));
+    registerServices(ss...);
+}
 
 }
 

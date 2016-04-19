@@ -25,13 +25,14 @@ class JCON_API JsonRpcClient : public QObject
     Q_OBJECT
 
 public:
-    typedef QString RequestId;
+    using RequestId = QString ;
 
-    JsonRpcClient(JsonRpcSocketPtr socket,
+    JsonRpcClient(std::shared_ptr<JsonRpcSocket> socket,
                   QObject* parent = nullptr,
-                  JsonRpcLoggerPtr logger = nullptr);
+                  std::shared_ptr<JsonRpcLogger> logger = nullptr);
     virtual ~JsonRpcClient();
 
+    /// @return true if connection was successful
     bool connectToServer(const QString& host, int port);
     void disconnectFromServer();
 
@@ -44,18 +45,19 @@ public:
     int serverPort() const;
 
     template<typename... T>
-    JsonRpcResultPtr call(const QString& method, T&&... params);
+    std::shared_ptr<JsonRpcResult> call(const QString& method, T&&... params);
 
     template<typename... T>
-    JsonRpcRequestPtr callAsync(const QString& method, T&&... params);
+    std::shared_ptr<JsonRpcRequest> callAsync(const QString& method,
+                                              T&&... params);
 
     /// Expand arguments in list before making the RPC call
-    JsonRpcResultPtr callExpandArgs(const QString& method,
-                                    const QVariantList& params);
+    std::shared_ptr<JsonRpcResult> callExpandArgs(const QString& method,
+                                                  const QVariantList& params);
 
     /// Expand arguments in list before making the RPC call
-    JsonRpcRequestPtr callAsyncExpandArgs(const QString& method,
-                                          const QVariantList& params);
+    std::shared_ptr<JsonRpcRequest>
+        callAsyncExpandArgs(const QString& method, const QVariantList& params);
 
     JsonRpcError lastError() const { return m_last_error; }
 
@@ -87,12 +89,13 @@ private:
     static QString getCallLogMessage(const QString& method,
                                      const QVariantList& params);
 
-    JsonRpcResultPtr waitForSyncCallbacks(const JsonRpcRequest* request);
+    std::shared_ptr<JsonRpcResult>
+        waitForSyncCallbacks(const JsonRpcRequest* request);
 
-    std::pair<JsonRpcRequestPtr, QJsonObject>
+    std::pair<std::shared_ptr<JsonRpcRequest>, QJsonObject>
         prepareCall(const QString& method);
 
-    std::pair<JsonRpcRequestPtr, RequestId> createRequest();
+    std::pair<std::shared_ptr<JsonRpcRequest>, RequestId> createRequest();
     static RequestId createUuid();
     QJsonObject createRequestJsonObject(const QString& method,
                                         const QString& id);
@@ -110,29 +113,31 @@ private:
                                  QString& message,
                                  QVariant& data);
 
-    typedef std::map<RequestId, JsonRpcRequestPtr> RequestMap;
+    using RequestMap = std::map<RequestId, std::shared_ptr<JsonRpcRequest>>;
 
-    JsonRpcLoggerPtr m_logger;
-    JsonRpcEndpointPtr m_endpoint;
+    std::shared_ptr<JsonRpcLogger> m_logger;
+    std::shared_ptr<JsonRpcEndpoint> m_endpoint;
     RequestMap m_outstanding_requests;
     QVariant m_last_result;
     JsonRpcError m_last_error;
 };
 
-typedef std::shared_ptr<JsonRpcClient> JsonRpcClientPtr;
-
 template<typename... T>
-JsonRpcResultPtr JsonRpcClient::call(const QString& method, T&&... params)
+std::shared_ptr<JsonRpcResult>
+JsonRpcClient::call(const QString& method, T&&... params)
 {
-    JsonRpcRequestPtr req = callAsync(method, std::forward<T>(params)...);
+    auto req = callAsync(method, std::forward<T>(params)...);
     return waitForSyncCallbacks(req.get());
 }
 
 template<typename... T>
-JsonRpcRequestPtr JsonRpcClient::callAsync(const QString& method,
-                                           T&&... params)
+std::shared_ptr<JsonRpcRequest>
+JsonRpcClient::callAsync(const QString& method, T&&... params)
 {
-    JsonRpcRequestPtr request;
+    if (!isConnected()) {
+        throw std::runtime_error("cannot call RPC method when not connected");
+    }
+    std::shared_ptr<JsonRpcRequest> request;
     QJsonObject req_json_obj;
     std::tie(request, req_json_obj) = prepareCall(method);
 
