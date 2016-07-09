@@ -1,5 +1,5 @@
-#ifndef JSONRPCTCPSOCKET_H
-#define JSONRPCTCPSOCKET_H
+#ifndef JSON_RPC_TCP_SOCKET_H
+#define JSON_RPC_TCP_SOCKET_H
 
 #include "jcon.h"
 #include "json_rpc_socket.h"

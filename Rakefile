@@ -13,7 +13,7 @@ task :copy_changed_files do
   temp_dir = 'temp'
   mkdir(temp_dir) unless File.directory?(temp_dir)
 
-  src_dir = File.join(orz_top, 'Libs', 'OrzJsonRpc', 'src', 'OrzJsonRpc')
+  src_dir = File.join(orz_top, 'src', 'Libs', 'OrzJsonRpc')
 
   Dir[File.join(src_dir, '*.{cpp,h}')]
     .reject { |n| n =~ /pch/ }

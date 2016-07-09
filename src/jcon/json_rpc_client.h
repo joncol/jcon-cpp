@@ -135,6 +135,7 @@ std::shared_ptr<JsonRpcRequest>
 JsonRpcClient::callAsync(const QString& method, T&&... params)
 {
     if (!isConnected()) {
+        m_logger->logError("cannot call RPC method when not connected");
         throw std::runtime_error("cannot call RPC method when not connected");
     }
     std::shared_ptr<JsonRpcRequest> request;

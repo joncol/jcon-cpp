@@ -1,5 +1,5 @@
-#ifndef JSONRPCTCPSERVER_H
-#define JSONRPCTCPSERVER_H
+#ifndef JSON_RPC_TCP_SERVER_H
+#define JSON_RPC_TCP_SERVER_H
 
 #include "jcon.h"
 #include "json_rpc_server.h"

@@ -155,21 +155,28 @@ bool JsonRpcServer::convertArgs(const QMetaMethod& meta_method,
                                 const QVariantList& args,
                                 QVariantList& converted_args)
 {
-    QList<QByteArray> method_types = meta_method.parameterTypes();
-    if (args.size() != method_types.size()) {
-        // logError(QString("wrong number of arguments to method %1 -- "
-        //                  "expected %2 arguments, but got %3")
-        //          .arg(meta_method.methodSignature())
-        //          .arg(meta_method.parameterCount())
-        //          .arg(args.size()));
+    QList<QByteArray> param_types = meta_method.parameterTypes();
+    if (args.size() != param_types.size()) {
+        logError(QString("wrong number of arguments to method %1 -- "
+                         "expected %2 arguments, but got %3")
+                 .arg(QString(meta_method.methodSignature()))
+                 .arg(meta_method.parameterCount())
+                 .arg(args.size()));
         return false;
     }
 
-    for (int i = 0; i < method_types.size(); i++) {
+    for (int i = 0; i < param_types.size(); i++) {
         const QVariant& arg = args.at(i);
+        if (!arg.isValid()) {
+            logError(QString("argument %1 of %2 to method %3 is invalid")
+                     .arg(i + 1)
+                     .arg(param_types.size())
+                     .arg(QString(meta_method.methodSignature())));
+            return false;
+        }
 
         QByteArray arg_type_name = arg.typeName();
-        QByteArray param_type_name = method_types.at(i);
+        QByteArray param_type_name = param_types.at(i);
 
         QVariant::Type param_type = QVariant::nameToType(param_type_name);
 
@@ -196,11 +203,11 @@ bool JsonRpcServer::convertArgs(const QMetaMethod& meta_method,
 {
     QList<QByteArray> param_types = meta_method.parameterTypes();
     if (args.size() != param_types.size()) {
-        // logError(QString("wrong number of arguments to method %1 -- "
-        //                  "expected %2 arguments, but got %3")
-        //          .arg(meta_method.methodSignature())
-        //          .arg(meta_method.parameterCount())
-        //          .arg(args.size()));
+        logError(QString("wrong number of arguments to method %1 -- "
+                         "expected %2 arguments, but got %3")
+                 .arg(QString(meta_method.methodSignature()))
+                 .arg(meta_method.parameterCount())
+                 .arg(args.size()));
         return false;
     }
 
@@ -211,6 +218,13 @@ bool JsonRpcServer::convertArgs(const QMetaMethod& meta_method,
             return false;
         }
         const QVariant& arg = args.value(param_name);
+        if (!arg.isValid()) {
+            logError(QString("argument %1 of %2 to method %3 is invalid")
+                     .arg(i + 1)
+                     .arg(param_types.size())
+                     .arg(QString(meta_method.methodSignature())));
+            return false;
+        }
 
         QByteArray arg_type_name = arg.typeName();
         QByteArray param_type_name = param_types.at(i);
@@ -317,6 +331,8 @@ QJsonDocument JsonRpcServer::createResponse(const QString& request_id,
         res_json_obj["result"] = return_value.toDouble();
     } else if (return_value.type() == QVariant::Bool) {
         res_json_obj["result"] = return_value.toBool();
+    } else if (return_value.type() == QVariant::String) {
+        res_json_obj["result"] = return_value.toString();
     } else {
         auto msg =
             QString("method '%1' has unknown return type: %2")

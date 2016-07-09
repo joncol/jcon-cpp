@@ -49,7 +49,8 @@ bool JsonRpcEndpoint::connectToHost(const QString& host, int port, int msecs)
         return false;
     }
 
-    m_logger->logInfo(QString("connected to server %1:%2").arg(host).arg(port));
+    m_logger->logInfo(QString("connected to JSON RPC server %1:%2")
+                      .arg(host).arg(port));
     return true;
 }
 
