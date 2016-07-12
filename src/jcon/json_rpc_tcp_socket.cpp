@@ -4,7 +4,7 @@
 namespace jcon {
 
 JsonRpcTcpSocket::JsonRpcTcpSocket()
-    : m_socket(new QTcpSocket)
+    : m_socket(new QTcpSocket(this))
 {
     setupSocket();
 }
@@ -18,7 +18,6 @@ JsonRpcTcpSocket::JsonRpcTcpSocket(QTcpSocket* socket)
 JsonRpcTcpSocket::~JsonRpcTcpSocket()
 {
     m_socket->disconnect(this);
-    m_socket->deleteLater();
 }
 
 void JsonRpcTcpSocket::setupSocket()
@@ -47,7 +46,9 @@ void JsonRpcTcpSocket::setupSocket()
 
 void JsonRpcTcpSocket::connectToHost(QString host, int port)
 {
-    m_socket->connectToHost(host, port);
+    m_socket->connectToHost(host, port,
+                            QIODevice::ReadWrite,
+                            QAbstractSocket::IPv4Protocol);
 }
 
 bool JsonRpcTcpSocket::waitForConnected(int msecs)

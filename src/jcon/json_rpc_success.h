@@ -1,6 +1,7 @@
 #ifndef JSON_RPC_SUCCESS_H
 #define JSON_RPC_SUCCESS_H
 
+#include "jcon.h"
 #include "json_rpc_result.h"
 
 #include <QVariant>

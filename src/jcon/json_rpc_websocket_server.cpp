@@ -30,7 +30,7 @@ JsonRpcWebSocketServer::~JsonRpcWebSocketServer()
 void JsonRpcWebSocketServer::listen(int port)
 {
     logInfo(QString("listening on port %2").arg(port));
-    m_server->listen(QHostAddress::Any, port);
+    m_server->listen(QHostAddress::AnyIPv4, port);
 }
 
 

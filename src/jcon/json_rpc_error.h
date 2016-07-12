@@ -1,6 +1,7 @@
 #ifndef JSON_RPC_ERROR_H
 #define JSON_RPC_ERROR_H
 
+#include "jcon.h"
 #include "json_rpc_result.h"
 
 #include <QString>
