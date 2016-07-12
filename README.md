@@ -42,7 +42,7 @@ types such as `QString`, `bool`, `int`, `float`, etc.
 Register your service with:
 
 ```c++
-rpc_server->registerServices(std::move(std::make_unique<ExampleService>()));
+rpc_server->registerServices(std::make_unique<ExampleService>());
 ```
 
 The server will take over ownership of the `unique_ptr`, and the memory will be
