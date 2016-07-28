@@ -1,6 +1,4 @@
-#ifndef JSONRPCREQUEST_H
-#define JSONRPCREQUEST_H
-
+#pragma once
 #include "jcon.h"
 
 #include <QDateTime>
@@ -28,5 +26,3 @@ private:
 };
 
 }
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_LOGGER_H
-#define JSON_RPC_LOGGER_H
-
+#pragma once
 #include "jcon.h"
 
 class QString;
@@ -19,5 +17,3 @@ public:
 };
 
 }
-
-#endif

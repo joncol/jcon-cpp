@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_DEBUG_LOGGER_H
-#define JSON_RPC_DEBUG_LOGGER_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_logger.h"
 
@@ -15,5 +13,3 @@ public:
 };
 
 }
-
-#endif

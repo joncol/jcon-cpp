@@ -1,6 +1,4 @@
-#ifndef EXAMPLESERVICE_H
-#define EXAMPLESERVICE_H
-
+#pragma once
 #include <QObject>
 
 class ExampleService : public QObject
@@ -13,6 +11,3 @@ public:
 
     Q_INVOKABLE int getRandomInt(int limit);
 };
-
-
-#endif
