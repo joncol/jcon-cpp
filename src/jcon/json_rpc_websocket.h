@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_WEBSOCKET_H
-#define JSON_RPC_WEBSOCKET_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_socket.h"
 
@@ -50,5 +48,3 @@ private:
 };
 
 }
-
-#endif

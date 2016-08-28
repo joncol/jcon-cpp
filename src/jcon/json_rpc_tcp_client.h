@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_TCP_CLIENT_H
-#define JSON_RPC_TCP_CLIENT_H
-
+#pragma once
 #include "json_rpc_client.h"
 
 namespace jcon {
@@ -16,5 +14,3 @@ public:
 };
 
 }
-
-#endif

@@ -1,6 +1,4 @@
-#ifndef JSONRPCSERVER_H
-#define JSONRPCSERVER_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_logger.h"
 
@@ -105,5 +103,3 @@ void JsonRpcServer::registerServices(T&& s, Ts&&... ss)
 }
 
 }
-
-#endif

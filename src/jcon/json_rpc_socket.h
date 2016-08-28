@@ -1,6 +1,4 @@
-#ifndef JSONRPCSOCKET_H
-#define JSONRPCSOCKET_H
-
+#pragma once
 #include "jcon.h"
 
 #include <QHostAddress>
@@ -35,5 +33,3 @@ signals:
 };
 
 }
-
-#endif

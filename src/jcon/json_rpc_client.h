@@ -1,6 +1,4 @@
-#ifndef JSONRPCCLIENT_H
-#define JSONRPCCLIENT_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_endpoint.h"
 #include "json_rpc_error.h"
@@ -167,5 +165,3 @@ void JsonRpcClient::convertToQVariantList(QVariantList& result,
 }
 
 }
-
-#endif

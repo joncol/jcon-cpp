@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_RESULT_H
-#define JSON_RPC_RESULT_H
-
+#pragma once
 #include <QString>
 #include <QVariant>
 
@@ -17,5 +15,3 @@ public:
 };
 
 }
-
-#endif

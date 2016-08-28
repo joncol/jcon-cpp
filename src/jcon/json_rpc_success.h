@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_SUCCESS_H
-#define JSON_RPC_SUCCESS_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_result.h"
 
@@ -23,5 +21,3 @@ private:
 };
 
 }
-
-#endif

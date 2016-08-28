@@ -1,6 +1,4 @@
-#ifndef STRING_UTIL_H
-#define STRING_UTIL_H
-
+#pragma once
 #include "jcon.h"
 
 #include <QVariantList>
@@ -22,5 +20,3 @@ JCON_API QString variantListToString(const QVariantList& l,
                                      const QString& sep = ", ");
 
 }
-
-#endif

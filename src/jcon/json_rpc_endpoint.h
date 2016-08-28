@@ -1,6 +1,4 @@
-#ifndef JSONRPCENDPOINT_H
-#define JSONRPCENDPOINT_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_logger.h"
 #include "json_rpc_socket.h"
@@ -72,5 +70,3 @@ private:
 };
 
 }
-
-#endif

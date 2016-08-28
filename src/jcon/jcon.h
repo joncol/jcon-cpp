@@ -1,6 +1,4 @@
-#ifndef JCON_H
-#define JCON_H
-
+#pragma once
 // Generic helper definitions for shared library support
 #if defined _WIN32 || defined __CYGWIN__
     #define JCON_HELPER_DLL_IMPORT __declspec(dllimport)
@@ -34,5 +32,3 @@
     #define JCON_API
     #define JCON_LOCAL
 #endif // JCON_DLL
-
-#endif

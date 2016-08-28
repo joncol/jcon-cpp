@@ -1,6 +1,4 @@
-#ifndef JSON_RPC_TCP_SERVER_H
-#define JSON_RPC_TCP_SERVER_H
-
+#pragma once
 #include "jcon.h"
 #include "json_rpc_server.h"
 #include "json_rpc_endpoint.h"
@@ -43,5 +41,3 @@ private:
 };
 
 }
-
-#endif
