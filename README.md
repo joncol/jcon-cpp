@@ -75,11 +75,12 @@ long as a non-null parent `QObject` is provided.)
 ### Invoking a Remote Method Asynchronously
 
 ```c++
-jcon::JsonRpcRequestPtr req = rpc_client->callAsync("getRandomInt", 10);
+auto req = rpc_client->callAsync("getRandomInt", 10);
 ```
 
-The returned `JsonRpcRequestPtr` can be used to set up a callback that is
-invoked when the result of the JSON RPC call is ready:
+The returned object (of type `std::shared_ptr<JsonRpcRequest>`) can be used to
+set up a callback, that is invoked when the result of the JSON RPC call is
+ready:
 
 ```c++
 req->connect(req.get(), &jcon::JsonRpcRequest::result,
@@ -103,10 +104,10 @@ req->connect(req.get(), &jcon::JsonRpcRequest::error,
 ### Invoking a Remote Method Synchronously
 
 ```c++
-jcon::JsonRpcResult result = rpc_client->call("getRandomInt", 10);
+auto result = rpc_client->call("getRandomInt", 10);
 
-if (result.isSuccess()) {
-    QVariant res = result.result();
+if (result->isSuccess()) {
+    QVariant res = result->result();
 } else {
     jcon::JsonRpcError error = rpc_client->lastError();
     QString err_str = error.toString();
@@ -122,7 +123,6 @@ single argument), use `callExpandArgs` and `callAsyncExpandArgs`.
 
 ## Known Issues
 
-* Error handling needs to be improved
 * Does not yet support batch requests/responses
 
 

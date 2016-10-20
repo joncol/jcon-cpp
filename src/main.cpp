@@ -14,15 +14,14 @@ void startServer(QObject* parent)
 {
     auto rpc_server = new jcon::JsonRpcTcpServer(parent);
     auto service = new ExampleService;
-    rpc_server->registerService(service);
+    rpc_server->registerServices({ service });
     rpc_server->listen(6002);
 }
 
-jcon::JsonRpcClientPtr startClient(QObject* parent)
+jcon::JsonRpcClient* startClient(QObject* parent)
 {
-    auto rpc_client = std::make_shared<jcon::JsonRpcTcpClient>(parent);
+    auto rpc_client = new jcon::JsonRpcTcpClient(parent);
     rpc_client->connectToServer("127.0.0.1", 6002);
-
     return rpc_client;
 }
 
@@ -30,8 +29,7 @@ void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
 {
     qsrand(time(nullptr));
 
-    jcon::JsonRpcClient::RequestPtr req =
-        rpc_client->callAsync("getRandomInt", 10);
+    auto req = rpc_client->callAsync("getRandomInt", 10);
 
     req->connect(req.get(), &jcon::JsonRpcRequest::result,
                  [](const QVariant& result) {
@@ -49,7 +47,7 @@ void invokeMethodSync(jcon::JsonRpcClient* rpc_client)
 {
     qsrand(time(nullptr));
 
-    jcon::JsonRpcResultPtr result = rpc_client->call("getRandomInt", 10);
+    auto result = rpc_client->call("getRandomInt", 10);
 
     if (result->isSuccess()) {
         qDebug() << "result of synchronous RPC call:" << result->result();
@@ -65,6 +63,6 @@ int main(int argc, char* argv[])
     startServer(&app);
     auto rpc_client = startClient(&app);
 
-    invokeMethodAsync(rpc_client.get());
-    invokeMethodSync(rpc_client.get());
+    invokeMethodAsync(rpc_client);
+    invokeMethodSync(rpc_client);
 }

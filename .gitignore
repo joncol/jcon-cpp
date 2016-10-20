@@ -6,8 +6,7 @@ GTAGS
 .\#*
 *.sw[opn]
 
-debug/
-release/
+_build/
 
 # Compiled Object files
 *.slo

@@ -18,18 +18,9 @@ if(USE_QT)
     set(QTDIR $ENV{QTDIR})
   endif()
 
-  if(APPLE)
-    set(CMAKE_PREFIX_PATH "${QTDIR}/5.5/clang_64")
-  elseif(WIN32)
-    set(CMAKE_PREFIX_PATH ${QTDIR})
-  elseif(UNIX)
-    set(CMAKE_PREFIX_PATH "${QTDIR}/5.5/gcc_64")
-  endif()
-
+  set(CMAKE_PREFIX_PATH ${QTDIR})
   set(CMAKE_AUTOMOC ON)
-
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
   find_program(QT_UIC_EXECUTABLE uic)
 endif()
 
