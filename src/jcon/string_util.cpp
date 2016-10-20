@@ -4,23 +4,30 @@
 
 namespace jcon {
 
-QString variantListToString(const QVariantList& l, const QString& sep)
+QString variantToString(const QVariant& v)
 {
-    QStringList str_list;
-    for (auto e : l) {
-        if (e.type() == QVariant::List) {
-            str_list.push_back(QString("list (%1 elements)")
-                               .arg(e.toList().size()));
-        } else if (e.type() == QVariant::Map) {
-            str_list.push_back(QString("map (%1 elements)")
-                               .arg(e.toMap().size()));
-        } else if (e.canConvert<QString>()) {
-            str_list.push_back("\"" + e.toString() + "\"");
-        } else {
-            str_list.push_back("N/A");
-        }
+    if (v.type() == QVariant::List) {
+        return QString("list (%1 elements)").arg(v.toList().size());
     }
-    return str_list.join(sep);
+    if (v.type() == QVariant::Map) {
+        return QString("map (%1 elements)").arg(v.toMap().size());
+    }
+    if (v.canConvert<QString>()) {
+        return v.toString();
+    }
+
+    return ("N/A");
+}
+
+QStringList variantListToStringList(const QVariantList& l)
+{
+
+    QStringList res;
+    std::transform(l.begin(), l.end(), std::back_inserter(res),
+                   [](const QVariant& v) {
+                       return variantToString(v);
+                   });
+    return res;
 }
 
 }

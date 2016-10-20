@@ -73,25 +73,25 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
 }
 
 std::shared_ptr<JsonRpcResult>
-JsonRpcClient::callExpandArgs(const QString& method, const QVariantList& params)
+JsonRpcClient::callExpandArgs(const QString& method, const QVariantList& args)
 {
-    auto req = callAsyncExpandArgs(method, params);
+    auto req = callAsyncExpandArgs(method, args);
     return waitForSyncCallbacks(req.get());
 }
 
 std::shared_ptr<JsonRpcRequest>
 JsonRpcClient::callAsyncExpandArgs(const QString& method,
-                                   const QVariantList& params)
+                                   const QVariantList& args)
 {
     std::shared_ptr<JsonRpcRequest> request;
     QJsonObject req_json_obj;
     std::tie(request, req_json_obj) = prepareCall(method);
 
-    if (params.size() > 0) {
-        req_json_obj["params"] = QJsonArray::fromVariantList(params);
+    if (!args.empty()) {
+        req_json_obj["params"] = QJsonArray::fromVariantList(args);
     }
 
-    m_logger->logInfo(getCallLogMessage(method, params));
+    m_logger->logInfo(getCallLogMessage(method, args));
     m_endpoint->send(QJsonDocument(req_json_obj));
 
     return request;
@@ -257,10 +257,17 @@ void JsonRpcClient::getJsonErrorInfo(const QJsonObject& response,
 }
 
 QString JsonRpcClient::getCallLogMessage(const QString& method,
-                                         const QVariantList& params)
+                                         const QVariantList& args)
 {
-    return QString("Calling RPC method: '%1' with arguments: %2")
-        .arg(method).arg(variantListToString(params));
+    auto msg = QString("Calling RPC method: '%1' ").arg(method);
+    if (args.empty()) {
+        msg += "without arguments";
+    } else {
+        msg += QString("with argument%1: %2")
+            .arg(args.size() == 1 ? "" : "s")
+            .arg(variantListToStringList(args).join(", "));
+    }
+    return msg;
 }
 
 void JsonRpcClient::logError(const QString& msg)

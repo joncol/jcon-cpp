@@ -1,4 +1,5 @@
 #pragma once
+
 #include "jcon.h"
 #include "json_rpc_endpoint.h"
 #include "json_rpc_error.h"
@@ -43,19 +44,19 @@ public:
     int serverPort() const;
 
     template<typename... T>
-    std::shared_ptr<JsonRpcResult> call(const QString& method, T&&... params);
+    std::shared_ptr<JsonRpcResult> call(const QString& method, T&&... args);
 
     template<typename... T>
     std::shared_ptr<JsonRpcRequest> callAsync(const QString& method,
-                                              T&&... params);
+                                              T&&... args);
 
     /// Expand arguments in list before making the RPC call
     std::shared_ptr<JsonRpcResult> callExpandArgs(const QString& method,
-                                                  const QVariantList& params);
+                                                  const QVariantList& args);
 
     /// Expand arguments in list before making the RPC call
     std::shared_ptr<JsonRpcRequest>
-        callAsyncExpandArgs(const QString& method, const QVariantList& params);
+        callAsyncExpandArgs(const QString& method, const QVariantList& args);
 
     JsonRpcError lastError() const { return m_last_error; }
 
@@ -85,7 +86,7 @@ private:
     static const QString InvalidRequestId;
 
     static QString getCallLogMessage(const QString& method,
-                                     const QVariantList& params);
+                                     const QVariantList& args);
 
     std::shared_ptr<JsonRpcResult>
         waitForSyncCallbacks(const JsonRpcRequest* request);
@@ -120,17 +121,17 @@ private:
     JsonRpcError m_last_error;
 };
 
-template<typename... T>
+template<typename... Ts>
 std::shared_ptr<JsonRpcResult>
-JsonRpcClient::call(const QString& method, T&&... params)
+JsonRpcClient::call(const QString& method, Ts&&... args)
 {
-    auto req = callAsync(method, std::forward<T>(params)...);
+    auto req = callAsync(method, std::forward<Ts>(args)...);
     return waitForSyncCallbacks(req.get());
 }
 
-template<typename... T>
+template<typename... Ts>
 std::shared_ptr<JsonRpcRequest>
-JsonRpcClient::callAsync(const QString& method, T&&... params)
+JsonRpcClient::callAsync(const QString& method, Ts&&... args)
 {
     if (!isConnected()) {
         m_logger->logError("cannot call RPC method when not connected");
@@ -141,7 +142,7 @@ JsonRpcClient::callAsync(const QString& method, T&&... params)
     std::tie(request, req_json_obj) = prepareCall(method);
 
     QVariantList param_list;
-    convertToQVariantList(param_list, std::forward<T>(params)...);
+    convertToQVariantList(param_list, std::forward<Ts>(args)...);
     req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
 
     m_logger->logInfo(getCallLogMessage(method, param_list));

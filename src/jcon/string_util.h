@@ -1,22 +1,28 @@
 #pragma once
+
 #include "jcon.h"
 
 #include <QVariantList>
 
-class QString;
-
 namespace jcon {
 
 /**
- * Convert a QVariantList to a QString
+ * Convert a QVariant to a QString, with non-empty representations of
+ * QVariantMaps and QVariantLists. Useful for logging.
  *
- * @param[in] l   The QVariantList to convert
- * @param[in] sep The separator to insert between element strings
+ * @param[in] v The QVariant to convert
  *
- * @returns A string with the string representations of each element in the list
- *          joined by the separator.
+ * @return A string representation of the QVariant.
  */
-JCON_API QString variantListToString(const QVariantList& l,
-                                     const QString& sep = ", ");
+JCON_API QString variantToString(const QVariant& v);
+
+/**
+ * Convert a QVariantList to a QStringList
+ *
+ * @param[in] l The QVariantList to convert
+ *
+ * @return A list with the string representations of each element in the list.
+ */
+JCON_API QStringList variantListToStringList(const QVariantList& l);
 
 }

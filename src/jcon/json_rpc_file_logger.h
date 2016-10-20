@@ -1,4 +1,5 @@
 #pragma once
+
 #include "json_rpc_logger.h"
 #include "jcon.h"
 

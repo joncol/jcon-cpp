@@ -1,4 +1,5 @@
 #pragma once
+
 #include "jcon.h"
 #include "json_rpc_result.h"
 
@@ -11,11 +12,11 @@ class JCON_API JsonRpcError : public JsonRpcResult
 {
 public:
     enum ErrorCodes {
-        EC_ParseError = -32700,
+        EC_ParseError     = -32700,
         EC_InvalidRequest = -32600,
         EC_MethodNotFound = -32601,
-        EC_InvalidParams = -32602,
-        EC_InternalError = -32603
+        EC_InvalidParams  = -32602,
+        EC_InternalError  = -32603
     };
 
     JsonRpcError(int code = 0,

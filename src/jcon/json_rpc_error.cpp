@@ -2,7 +2,9 @@
 
 namespace jcon {
 
-JsonRpcError::JsonRpcError(int code, const QString& message, const QVariant& data)
+JsonRpcError::JsonRpcError(int code,
+                           const QString& message,
+                           const QVariant& data)
     : m_code(code)
     , m_message(message)
     , m_data(data)

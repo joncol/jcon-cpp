@@ -1,14 +1,21 @@
 #include "json_rpc_server.h"
+#include "jcon_assert.h"
 #include "json_rpc_endpoint.h"
 #include "json_rpc_error.h"
 #include "json_rpc_file_logger.h"
-#include "jcon_assert.h"
+#include "string_util.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QVariant>
 #include <QMetaMethod>
+
+namespace {
+    QString logInvoke(const QMetaMethod& meta_method,
+                      const QVariantList& args,
+                      const QVariant& return_value);
+}
 
 namespace jcon {
 
@@ -26,6 +33,11 @@ JsonRpcServer::JsonRpcServer(QObject* parent,
 
 JsonRpcServer::~JsonRpcServer()
 {
+}
+
+void JsonRpcServer::registerServices(const QObjectList& services)
+{
+    m_services = services;
 }
 
 void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
@@ -100,19 +112,11 @@ bool JsonRpcServer::dispatch(const QString& method_name,
                 if (params.type() == QVariant::List ||
                     params.type() == QVariant::StringList)
                 {
-                    if (call(s.get(),
-                             meta_method,
-                             params.toList(),
-                             return_value))
-                    {
+                    if (call(s, meta_method, params.toList(), return_value)) {
                         return true;
                     }
                 } else if (params.type() == QVariant::Map) {
-                    if (call(s.get(),
-                             meta_method,
-                             params.toMap(),
-                             return_value))
-                    {
+                    if (call(s, meta_method, params.toMap(), return_value)) {
                         return true;
                     }
                 }
@@ -306,6 +310,8 @@ bool JsonRpcServer::doCall(QObject* object,
         return false;
     }
 
+    logInfo(logInvoke(meta_method, converted_args, return_value));
+
     return true;
 }
 
@@ -375,6 +381,42 @@ void JsonRpcServer::logInfo(const QString& msg)
 void JsonRpcServer::logError(const QString& msg)
 {
     m_logger->logError("JSON RPC server error: " + msg);
+}
+
+}
+
+namespace {
+
+QString logInvoke(const QMetaMethod& meta_method,
+                  const QVariantList& args,
+                  const QVariant& return_value)
+{
+    const auto ns = meta_method.parameterNames();
+    auto ps = jcon::variantListToStringList(args);
+    QStringList args_sl;
+    std::transform(ns.begin(), ns.end(), ps.begin(),
+                   std::back_inserter(args_sl),
+                   [](auto x, auto y) -> QString {
+                       return static_cast<QString>(x) + ": " + y;
+                   }
+        );
+
+    auto msg = QString("%1 invoked ")
+        .arg(static_cast<QString>(meta_method.name()));
+
+    if (args_sl.empty()) {
+        msg += "without arguments";
+    } else {
+        msg += QString("with argument%1: %2")
+            .arg(args_sl.size() == 1 ? "" : "s")
+            .arg(args_sl.join(", "));
+    }
+
+    if (return_value.isValid()) {
+        msg += " -> returning: " + jcon::variantToString(return_value);
+    }
+
+    return msg;
 }
 
 }

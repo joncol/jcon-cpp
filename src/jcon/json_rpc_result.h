@@ -1,4 +1,7 @@
 #pragma once
+
+#include "jcon.h"
+
 #include <QString>
 #include <QVariant>
 
