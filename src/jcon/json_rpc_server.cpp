@@ -327,6 +327,8 @@ QJsonDocument JsonRpcServer::createResponse(const QString& request_id,
         res_json_obj["result"] = ret_doc.object();
     } else if (return_value.type() == QVariant::Int) {
         res_json_obj["result"] = return_value.toInt();
+    } else if (return_value.type() == QVariant::LongLong) {
+        res_json_obj["result"] = return_value.toLongLong();
     } else if (return_value.type() == QVariant::Double) {
         res_json_obj["result"] = return_value.toDouble();
     } else if (return_value.type() == QVariant::Bool) {
