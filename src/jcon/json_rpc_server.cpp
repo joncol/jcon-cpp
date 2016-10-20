@@ -67,6 +67,7 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
             }
 
             endpoint->send(error);
+            return;
         }
     }
 
