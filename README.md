@@ -42,12 +42,13 @@ types such as `QString`, `bool`, `int`, `float`, etc.
 Register your service with:
 
 ```c++
-rpc_server->registerServices(std::make_unique<ExampleService>());
+rpc_server->registerServices({ new ExampleService() });
 ```
 
-The server will take over ownership of the `unique_ptr`, and the memory will be
-freed at shutdown. You can pass as many services as you want as arguments to the
-`registerServices` method.
+The server will take over ownership of the service object, and the memory will
+be freed at shutdown. Note that the `registerServices` method changed its
+signature 2016-10-20, from being a variadic template expecting `unique_ptrs`, to
+taking a `QObjectList`.
 
 Finally, start listening for client connections by:
 
