@@ -82,7 +82,7 @@ private slots:
     void jsonResponseReceived(const QJsonObject& obj);
 
 private:
-    static const int CallTimeout = 5000;
+    static const int CallTimeout = 30000;
     static const QString InvalidRequestId;
 
     static QString getCallLogMessage(const QString& method,
@@ -99,7 +99,7 @@ private:
     QJsonObject createRequestJsonObject(const QString& method,
                                         const QString& id);
 
-    void convertToQVariantList(QVariantList& result) {}
+    void convertToQVariantList(QVariantList& /*result*/) {}
 
     template<typename T>
     void convertToQVariantList(QVariantList& result, T&& x);
@@ -134,8 +134,10 @@ std::shared_ptr<JsonRpcRequest>
 JsonRpcClient::callAsync(const QString& method, Ts&&... args)
 {
     if (!isConnected()) {
-        m_logger->logError("cannot call RPC method when not connected");
-        throw std::runtime_error("cannot call RPC method when not connected");
+        auto msg = QString("cannot call RPC method (%1) when not connected")
+            .arg(method);
+        m_logger->logError(msg);
+        throw std::runtime_error(msg.toStdString());
     }
     std::shared_ptr<JsonRpcRequest> request;
     QJsonObject req_json_obj;
