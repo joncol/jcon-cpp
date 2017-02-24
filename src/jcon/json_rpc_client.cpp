@@ -29,13 +29,13 @@ JsonRpcClient::JsonRpcClient(std::shared_ptr<JsonRpcSocket> socket,
             this, &JsonRpcClient::socketConnected);
 
     connect(m_endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
-            [this](QObject* socket) {
-                m_endpoint->disconnect(this);
-                emit socketDisconnected(socket);
-            });
+            this, &JsonRpcClient::socketDisconnected);
 
     connect(m_endpoint.get(), &JsonRpcEndpoint::socketError,
             this, &JsonRpcClient::socketError);
+
+    connect(m_endpoint.get(), &JsonRpcEndpoint::jsonObjectReceived,
+            this, &JsonRpcClient::jsonResponseReceived);
 }
 
 JsonRpcClient::~JsonRpcClient()
@@ -142,9 +142,6 @@ bool JsonRpcClient::connectToServer(const QString& host, int port)
     if (!m_endpoint->connectToHost(host, port)) {
         return false;
     }
-
-    connect(m_endpoint.get(), &JsonRpcEndpoint::jsonObjectReceived,
-            this, &JsonRpcClient::jsonResponseReceived);
 
     return true;
 }

@@ -90,7 +90,6 @@ int JsonRpcEndpoint::peerPort() const
     return m_socket->peerPort();
 }
 
-
 void JsonRpcEndpoint::send(const QJsonDocument& doc)
 {
     QByteArray bytes = doc.toJson();
