@@ -8,14 +8,15 @@ In all of the following, replace "Tcp" with "WebSocket" to change the transport
 method.
 
 ## Building the Library
-You can build the library by checking out the source and running `cmake` in the
-top directory, followed by `make`. Note that you might need to specify the
-`CMAKE_PREFIX_PATH` in order for `cmake` to find the required Qt dependencies.
 
-```
-CMAKE_PREFIX_PATH=/opt/Qt/5.6/gcc_64/lib/cmake cmake .
-make
-```
+1. Get the source.
+2. Create a `build` directory in the top directory.
+3. Change to the `build` directory: `cd build`.
+4. `cmake ..`
+5. `make -j4`
+
+The build depends on the environment variable `QTDIR` to find the required Qt
+dependencies.
 
 ## Creating a Server
 

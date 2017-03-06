@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 2.8.12)
+cmake_policy(SET CMP0043 NEW)
+cmake_policy(SET CMP0053 NEW)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Werror -Wno-conversion -Wno-sign-compare -Wno-strict-aliasing")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror -Wno-conversion -Wno-sign-compare -Wno-strict-aliasing")
+
+set(CMAKE_CXX_STANDARD 14)
 
 # add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
 
@@ -13,6 +17,10 @@ if(WIN32)
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
+
+# if(MINGW)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+# endif()
 
 if(APPLE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-sign-conversion -Wno-shorten-64-to-32 -Wno-unused-private-field")

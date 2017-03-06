@@ -8,6 +8,8 @@
 #include <QPushButton>
 #include <QThread>
 
+#include <ctime>
+#include <iostream>
 #include <memory>
 
 void startServer(QObject* parent)
@@ -27,7 +29,7 @@ jcon::JsonRpcClient* startClient(QObject* parent)
 
 void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
 {
-    qsrand(time(nullptr));
+    qsrand(std::time(nullptr));
 
     auto req = rpc_client->callAsync("getRandomInt", 10);
 
@@ -45,9 +47,9 @@ void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
 
 void invokeMethodSync(jcon::JsonRpcClient* rpc_client)
 {
-    qsrand(time(nullptr));
+    qsrand(std::time(nullptr));
 
-    auto result = rpc_client->call("getRandomInt", 10);
+    auto result = rpc_client->call("getRandomInt", 100);
 
     if (result->isSuccess()) {
         qDebug() << "result of synchronous RPC call:" << result->result();
@@ -58,6 +60,7 @@ void invokeMethodSync(jcon::JsonRpcClient* rpc_client)
 
 int main(int argc, char* argv[])
 {
+    std::cout << "Yo!\n";
     QCoreApplication app(argc, argv);
 
     startServer(&app);
