@@ -4,9 +4,9 @@ task default: :copy_changed_files
 
 desc 'Copy changed source files from ORZ_TOP'
 task :copy_changed_files do
-  fail 'Environment variable ORZ_TOP must be set' if ENV['ORZ_TOP'].nil?
-  orz_top = ENV['ORZ_TOP'].gsub('\\', '/')
-  fail 'ORZ_TOP not set' unless orz_top
+  raise 'Environment variable ORZ_TOP must be set' if ENV['ORZ_TOP'].nil?
+  orz_top = ENV['ORZ_TOP'].tr('\\', '/')
+  raise 'ORZ_TOP not set' unless orz_top
   dir_name = 'changed_source_files'
   mkdir(dir_name) unless File.directory?(dir_name)
 
@@ -17,11 +17,12 @@ task :copy_changed_files do
 
   Dir[File.join(src_dir, '*.{cpp,h}')]
     .reject { |n| n =~ /pch/ }
-    .reject { |n| n =~ /jcon_assert\.h/}.each do |file|
+    .reject { |n| n =~ %r{/jcon.h$} }
+    .reject { |n| n =~ /jcon_assert\.h/ }.each do |file|
     basename = File.basename(file)
     dest_file = File.join(temp_dir, basename)
     FileUtils.cp(file, dest_file)
-    system(%Q[sed -i 'N;N;s/#include "pch\.h"\\n\\n//' #{dest_file}])
+    system(%(sed -i 'N;N;s/#include "pch\.h"\\n\\n//' #{dest_file}))
   end
 
   Dir[File.join(temp_dir, '*')].each do |file|
@@ -36,9 +37,7 @@ task :copy_changed_files do
              true
            end
 
-    if copy
-      FileUtils.copy(file, dest_file, verbose: true)
-    end
+    FileUtils.copy(file, dest_file, verbose: true) if copy
   end
 
   FileUtils.rm_rf(temp_dir)
