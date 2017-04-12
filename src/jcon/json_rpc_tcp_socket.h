@@ -32,7 +32,7 @@ public:
     bool waitForConnected(int msecs) override;
     void disconnectFromHost() override;
     bool isConnected() const override;
-    void send(const QByteArray& data) override;
+    size_t send(const QByteArray& data) override;
     QString errorString() const override;
     QHostAddress localAddress() const override;
     int localPort() const override;

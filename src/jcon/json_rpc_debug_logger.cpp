@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "json_rpc_debug_logger.h"
 
 #include <QDebug>

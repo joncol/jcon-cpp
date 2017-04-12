@@ -17,6 +17,8 @@ public:
                    QDateTime timestamp = QDateTime::currentDateTime());
     virtual ~JsonRpcRequest();
 
+    QString id() const;
+
 signals:
     void result(const QVariant& result);
     void error(int code, const QString& message, const QVariant& data);

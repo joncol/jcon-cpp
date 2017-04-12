@@ -46,27 +46,32 @@ JsonRpcClient::~JsonRpcClient()
 std::shared_ptr<JsonRpcResult>
 JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
 {
-    m_last_result = QVariant();
-    m_last_error = JsonRpcError();
-
     connect(request, &JsonRpcRequest::result,
-            this, &JsonRpcClient::syncCallResult);
+            [this, id = request->id()](const QVariant& result) {
+                m_results[id] = std::make_shared<JsonRpcSuccess>(result);
+            });
 
     connect(request, &JsonRpcRequest::error,
-            this, &JsonRpcClient::syncCallError);
+            [this, id = request->id()](int code,
+                                       const QString& message,
+                                       const QVariant& data)
+            {
+                m_results[id] =
+                    std::make_shared<JsonRpcError>(code, message, data);
+            });
 
-    QSignalSpy res_spy(this, &JsonRpcClient::syncCallSucceeded);
-    QSignalSpy err_spy(this, &JsonRpcClient::syncCallFailed);
     QTime timer;
     timer.start();
-    while (res_spy.isEmpty() && err_spy.isEmpty() &&
-           timer.elapsed() < CallTimeout) {
+    while (m_outstanding_requests.contains(request->id()) &&
+           timer.elapsed() < CallTimeout)
+    {
         QCoreApplication::processEvents();
     }
-    if (!res_spy.isEmpty()) {
-        return std::make_shared<JsonRpcSuccess>(m_last_result);
-    } else if (!err_spy.isEmpty()) {
-        return std::make_shared<JsonRpcError>(m_last_error);
+
+    if (m_results.contains(request->id())) {
+        auto res = m_results[request->id()];
+        m_results.remove(request->id());
+        return res;
     } else {
         return std::make_shared<JsonRpcError>(
             JsonRpcError::EC_InternalError,
@@ -176,20 +181,6 @@ int JsonRpcClient::serverPort() const
     return m_endpoint->peerPort();
 }
 
-void JsonRpcClient::syncCallResult(const QVariant& result)
-{
-    m_last_result = result;
-    emit syncCallSucceeded();
-}
-
-void JsonRpcClient::syncCallError(int code,
-                                  const QString& message,
-                                  const QVariant& data)
-{
-    m_last_error = JsonRpcError(code, message, data);
-    emit syncCallFailed();
-}
-
 void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
 {
     JCON_ASSERT(response["jsonrpc"].toString() == "2.0");
@@ -214,7 +205,7 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
                                  "request: %1").arg(id));
                 return;
             }
-            emit it->second->error(code, msg, data);
+            emit it.value()->error(code, msg, data);
             m_outstanding_requests.erase(it);
         }
 
@@ -240,7 +231,7 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
         return;
     }
 
-    emit it->second->result(result);
+    emit it.value()->result(result);
     m_outstanding_requests.erase(it);
 }
 

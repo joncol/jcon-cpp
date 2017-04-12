@@ -1,4 +1,9 @@
 #pragma once
+
+#ifndef JCON_DLL
+#define JCON_DLL
+#endif
+
 // Generic helper definitions for shared library support
 #if defined _WIN32 || defined __CYGWIN__
     #define JCON_HELPER_DLL_IMPORT __declspec(dllimport)
@@ -22,11 +27,11 @@
 // symbols.
 
 #ifdef JCON_DLL // defined if JCON is compiled as a DLL
-    #ifdef JCON_DLL_EXPORTS // defined if building the DLL (vs. using it)
+    #ifdef OrzJsonRpc_EXPORTS // defined if building the DLL (vs. using it)
         #define JCON_API JCON_HELPER_DLL_EXPORT
     #else
         #define JCON_API JCON_HELPER_DLL_IMPORT
-    #endif // JCON_DLL_EXPORTS
+    #endif // OrzJsonRpc_EXPORTS
     #define JCON_LOCAL JCON_HELPER_DLL_LOCAL
 #else // JCON_DLL is not defined: this means JCON is a static lib.
     #define JCON_API

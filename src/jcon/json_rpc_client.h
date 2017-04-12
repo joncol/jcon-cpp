@@ -10,8 +10,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QMap>
 
-#include <map>
 #include <memory>
 #include <utility>
 
@@ -58,8 +58,6 @@ public:
     std::shared_ptr<JsonRpcRequest>
         callAsyncExpandArgs(const QString& method, const QVariantList& args);
 
-    JsonRpcError lastError() const { return m_last_error; }
-
 signals:
     /// Emitted when a connection has been made to the server.
     void socketConnected(QObject* socket);
@@ -70,15 +68,10 @@ signals:
     /// Emitted when the RPC socket has an error.
     void socketError(QObject* socket, QAbstractSocket::SocketError error);
 
-    void syncCallSucceeded();
-    void syncCallFailed();
-
 protected:
     void logError(const QString& msg);
 
 private slots:
-    void syncCallResult(const QVariant& result);
-    void syncCallError(int code, const QString& message, const QVariant& data);
     void jsonResponseReceived(const QJsonObject& obj);
 
 private:
@@ -112,13 +105,14 @@ private:
                                  QString& message,
                                  QVariant& data);
 
-    using RequestMap = std::map<RequestId, std::shared_ptr<JsonRpcRequest>>;
-
     std::shared_ptr<JsonRpcLogger> m_logger;
     std::shared_ptr<JsonRpcEndpoint> m_endpoint;
+
+    using RequestMap = QMap<RequestId, std::shared_ptr<JsonRpcRequest>>;
     RequestMap m_outstanding_requests;
-    QVariant m_last_result;
-    JsonRpcError m_last_error;
+
+    using ResultMap = QMap<RequestId, std::shared_ptr<JsonRpcResult>>;
+    ResultMap m_results;
 };
 
 template<typename... Ts>

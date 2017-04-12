@@ -15,4 +15,9 @@ JsonRpcRequest::~JsonRpcRequest()
 {
 }
 
+QString JsonRpcRequest::id() const
+{
+    return m_id;
+}
+
 }
