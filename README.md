@@ -11,7 +11,7 @@ layer, then **JCON-CPP** might prove useful.
 In all of the following, replace "Tcp" with "WebSocket" to change the transport
 method.
 
-Platforms supported are: Linux, Windows, Mac OS, Android.
+Platforms supported are: Linux, Windows, Mac OS, and Android.
 
 ## Building the Library
 
@@ -125,8 +125,7 @@ auto result = rpc_client->call("getRandomInt", 10);
 if (result->isSuccess()) {
     QVariant res = result->result();
 } else {
-    jcon::JsonRpcError error = rpc_client->lastError();
-    QString err_str = error.toString();
+    QString err_str = result->toString();
 }
 ```
 
