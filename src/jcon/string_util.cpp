@@ -21,7 +21,6 @@ QString variantToString(const QVariant& v)
 
 QStringList variantListToStringList(const QVariantList& l)
 {
-
     QStringList res;
     std::transform(l.begin(), l.end(), std::back_inserter(res),
                    [](const QVariant& v) {
