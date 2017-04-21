@@ -65,7 +65,7 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
     while (m_outstanding_requests.contains(request->id()) &&
            timer.elapsed() < CallTimeout)
     {
-        QCoreApplication::processEvents();
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
 
     if (m_results.contains(request->id())) {

@@ -61,7 +61,7 @@ bool JsonRpcWebSocket::waitForConnected(int msecs)
     QSignalSpy spy(m_socket, &QWebSocket::connected);
     timer.start();
     while (spy.isEmpty() && timer.elapsed() < msecs) {
-        QCoreApplication::processEvents();
+        QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
     return !spy.isEmpty();
 }
