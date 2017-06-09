@@ -3,15 +3,16 @@
 #include <QDebug>
 #include <QtGlobal>
 
-ExampleService::ExampleService()
-{
-}
+ExampleService::ExampleService() = default;
 
-ExampleService::~ExampleService()
-{
-}
+ExampleService::~ExampleService() = default;
 
 int ExampleService::getRandomInt(int limit)
 {
     return qrand() % limit;
+}
+
+void ExampleService::printMessage(const QString& msg)
+{
+    qDebug().noquote() << QString("-> printMessage: '%1'").arg(msg);
 }
