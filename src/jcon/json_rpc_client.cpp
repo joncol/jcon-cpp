@@ -18,6 +18,7 @@ JsonRpcClient::JsonRpcClient(std::shared_ptr<JsonRpcSocket> socket,
                              std::shared_ptr<JsonRpcLogger> logger)
     : QObject(parent)
     , m_logger(logger)
+    , m_outstanding_request_count(0)
 {
     if (!m_logger) {
         m_logger = std::make_shared<JsonRpcFileLogger>("json_client_log.txt");
@@ -105,6 +106,11 @@ JsonRpcClient::callAsyncExpandArgs(const QString& method,
     return request;
 }
 
+int JsonRpcClient::outstandingRequestCount() const
+{
+    return m_outstanding_request_count;
+}
+
 std::pair<std::shared_ptr<JsonRpcRequest>, QJsonObject>
 JsonRpcClient::prepareCall(const QString& method)
 {
@@ -112,6 +118,7 @@ JsonRpcClient::prepareCall(const QString& method)
     RequestId id;
     std::tie(request, id) = createRequest();
     m_outstanding_requests[id] = request;
+    ++m_outstanding_request_count;
     QJsonObject req_json_obj = createRequestJsonObject(method, id);
     return std::make_pair(request, req_json_obj);
 }
@@ -233,6 +240,7 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
 
     emit it.value()->result(result);
     m_outstanding_requests.erase(it);
+    --m_outstanding_request_count;
 }
 
 void JsonRpcClient::getJsonErrorInfo(const QJsonObject& response,

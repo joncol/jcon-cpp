@@ -58,6 +58,8 @@ public:
     std::shared_ptr<JsonRpcRequest>
         callAsyncExpandArgs(const QString& method, const QVariantList& args);
 
+    int outstandingRequestCount() const;
+
 signals:
     /// Emitted when a connection has been made to the server.
     void socketConnected(QObject* socket);
@@ -110,6 +112,7 @@ private:
 
     using RequestMap = QMap<RequestId, std::shared_ptr<JsonRpcRequest>>;
     RequestMap m_outstanding_requests;
+    int m_outstanding_request_count;
 
     using ResultMap = QMap<RequestId, std::shared_ptr<JsonRpcResult>>;
     ResultMap m_results;
