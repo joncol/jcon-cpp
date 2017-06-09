@@ -64,12 +64,12 @@ if(APPLE)
             fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")
             " COMPONENT Runtime)
 
-else(APPLE)
+else()
     install(TARGETS ${EXECUTABLE_NAME}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static)
-endif(APPLE)
+endif()
 
 if(MINGW)
     get_filename_component(MINGW_DIR ${CMAKE_C_COMPILER} PATH)
