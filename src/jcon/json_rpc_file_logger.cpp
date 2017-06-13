@@ -14,6 +14,11 @@ JsonRpcFileLogger::~JsonRpcFileLogger()
     m_file.close();
 }
 
+void JsonRpcFileLogger::logDebug(const QString& message)
+{
+    m_stream << message << "\n";
+}
+
 void JsonRpcFileLogger::logInfo(const QString& message)
 {
     m_stream << message << "\n";

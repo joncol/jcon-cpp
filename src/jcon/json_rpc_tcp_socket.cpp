@@ -69,7 +69,9 @@ bool JsonRpcTcpSocket::isConnected() const
 
 size_t JsonRpcTcpSocket::send(const QByteArray& data)
 {
-    return m_socket->write(data);
+    auto sz = m_socket->write(data);
+    m_socket->flush();
+    return sz;
 }
 
 QString JsonRpcTcpSocket::errorString() const

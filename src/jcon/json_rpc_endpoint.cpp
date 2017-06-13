@@ -2,7 +2,6 @@
 #include "json_rpc_socket.h"
 #include "jcon_assert.h"
 
-#include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTcpSocket>
@@ -95,7 +94,6 @@ void JsonRpcEndpoint::send(const QJsonDocument& doc)
 {
     QByteArray bytes = doc.toJson();
     m_socket->send(bytes);
-    QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
 }
 
 void JsonRpcEndpoint::dataReady(const QByteArray& bytes, QObject* socket)

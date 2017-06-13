@@ -96,12 +96,17 @@ int main(int argc, char* argv[])
 
     invokeMethodAsync(rpc_client);
     invokeMethodSync(rpc_client);
-    invokeStringMethodAsync(rpc_client);
     invokeStringMethodSync(rpc_client);
+    invokeStringMethodAsync(rpc_client);
 
     if (rpc_client->outstandingRequestCount() > 0) {
         qDebug().noquote() << QString("Waiting for %1 outstanding requests")
             .arg(rpc_client->outstandingRequestCount());
+
+        while (rpc_client->outstandingRequestCount() > 0) {
+            qDebug() << "Calling QCoreApplication::processEvents()";
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+        }
     } else {
         qDebug() << "No outstanding requests, quitting";
     }
