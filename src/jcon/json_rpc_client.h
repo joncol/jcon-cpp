@@ -83,7 +83,8 @@ private:
 
     static QString formatLogMessage(const QString& method,
                                     const QVariantList& args,
-                                    bool async);
+                                    bool async,
+                                    const QString& request_id);
 
     std::shared_ptr<JsonRpcResult>
         waitForSyncCallbacks(const JsonRpcRequest* request);
@@ -166,7 +167,9 @@ JsonRpcClient::doCall(const QString& method, bool async, Ts&&... args)
     convertToQVariantList(param_list, std::forward<Ts>(args)...);
     req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
 
-    m_logger->logInfo(formatLogMessage(method, param_list, async));
+    m_logger->logInfo(
+        formatLogMessage(method, param_list, async, request->id()));
+
     m_endpoint->send(QJsonDocument(req_json_obj));
 
     return request;

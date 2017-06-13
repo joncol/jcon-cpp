@@ -51,6 +51,10 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
 {
     connect(request, &JsonRpcRequest::result,
             [this, id = request->id()](const QVariant& result) {
+                m_logger->logDebug(
+                    QString("Received success response to synchronous "
+                            "RPC call (ID: %1)").arg(qPrintable(id)));
+
                 m_results[id] = std::make_shared<JsonRpcSuccess>(result);
             });
 
@@ -59,6 +63,10 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
                                        const QString& message,
                                        const QVariant& data)
             {
+                m_logger->logError(
+                    QString("Received error response to synchronous "
+                            "RPC call (ID: %1)").arg(qPrintable(id)));
+
                 m_results[id] =
                     std::make_shared<JsonRpcError>(code, message, data);
             });
@@ -110,7 +118,7 @@ JsonRpcClient::doCallExpandArgs(const QString& method,
         req_json_obj["params"] = QJsonArray::fromVariantList(args);
     }
 
-    m_logger->logInfo(formatLogMessage(method, args, async));
+    m_logger->logInfo(formatLogMessage(method, args, async, request->id()));
     m_endpoint->send(QJsonDocument(req_json_obj));
 
     return request;
@@ -266,7 +274,8 @@ void JsonRpcClient::getJsonErrorInfo(const QJsonObject& response,
 
 QString JsonRpcClient::formatLogMessage(const QString& method,
                                         const QVariantList& args,
-                                        bool async)
+                                        bool async,
+                                        const QString& request_id)
 {
     auto msg = QString("Calling (%1) RPC method: '%2' ")
         .arg(async ? "async" : "sync").arg(method);
@@ -278,6 +287,7 @@ QString JsonRpcClient::formatLogMessage(const QString& method,
             .arg(args.size() == 1 ? "" : "s")
             .arg(variantListToStringList(args).join(", "));
     }
+    msg += QString(" (request ID: %1)").arg(request_id);
     return msg;
 }
 
