@@ -7,8 +7,11 @@ namespace jcon {
 
 JsonRpcWebSocketClient::JsonRpcWebSocketClient(
     QObject* parent,
-    std::shared_ptr<JsonRpcLogger> logger)
-    : JsonRpcClient(std::make_shared<JsonRpcWebSocket>(), parent, logger)
+    std::shared_ptr<JsonRpcLogger> logger,
+    int call_timeout_ms)
+
+    : JsonRpcClient(std::make_shared<JsonRpcWebSocket>(),
+                    parent, logger, call_timeout_ms)
 {
 }
 
