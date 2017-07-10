@@ -1,5 +1,10 @@
 project(jcon)
 
+# These two lines fixes unresolved externals 
+# when liinking under Visual Studio
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
 file(GLOB ${PROJECT_NAME}_headers *.h)
 file(GLOB ${PROJECT_NAME}_sources *.cpp)
 
