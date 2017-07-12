@@ -56,8 +56,8 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
     }
 
     QVariant params = request.value("params").toVariant();
-
-    QString request_id = request.value("id").toString(InvalidRequestId);
+	QVariant request_id_var = request.value("id").toVariant();
+    QString request_id = request_id_var.toString();
 
     QVariant return_value;
     if (!dispatch(method_name, params, request_id, return_value)) {
