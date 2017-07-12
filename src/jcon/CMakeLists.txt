@@ -1,9 +1,14 @@
 project(jcon)
 
+cmake_minimum_required(VERSION 3.8)
+set(QTDIR $ENV{QTDIR})
+set(Q5_DIR $ENV{QTDIR})
+
 # These two lines fixes unresolved externals 
 # when liinking under Visual Studio
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_PREFIX_PATH ${QTDIR})
 
 file(GLOB ${PROJECT_NAME}_headers *.h)
 file(GLOB ${PROJECT_NAME}_sources *.cpp)
