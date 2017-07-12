@@ -99,8 +99,10 @@ void JsonRpcEndpoint::send(const QJsonDocument& doc)
 void JsonRpcEndpoint::dataReady(const QByteArray& bytes, QObject* socket)
 {
     JCON_ASSERT(bytes.length() > 0);
-    m_recv_buffer += bytes;
-    m_recv_buffer = processBuffer(m_recv_buffer.trimmed(), socket);
+	// Copying data to new buffer because endpoint buffer may be invalidated at any time by closing socket from outside 
+	// and we will get here an exception
+    m_recv_buffer += QByteArray::fromRawData(bytes.data(), bytes.size());
+    processBuffer(m_recv_buffer.trimmed(), socket);
 }
 
 QByteArray JsonRpcEndpoint::processBuffer(const QByteArray& buffer,
