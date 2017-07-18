@@ -94,7 +94,7 @@ void JsonRpcTcpServer::disconnectClient(QObject* client_socket)
 {
     QTcpSocket* tcp_socket = qobject_cast<QTcpSocket*>(client_socket);
     JCON_ASSERT(tcp_socket);
-    if (!tcp_socket) {
+    if (!tcp_socket) { 
         logError("client disconnected, but socket is null");
         return;
     }
