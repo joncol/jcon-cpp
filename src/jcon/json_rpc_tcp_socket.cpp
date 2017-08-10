@@ -18,6 +18,7 @@ JsonRpcTcpSocket::JsonRpcTcpSocket(QTcpSocket* socket)
 JsonRpcTcpSocket::~JsonRpcTcpSocket()
 {
     m_socket->disconnect(this);
+	this->disconnect(m_socket);
 }
 
 void JsonRpcTcpSocket::setupSocket()
