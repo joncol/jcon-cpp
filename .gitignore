@@ -8,6 +8,10 @@ GTAGS
 
 _build/
 build/
+.idea
+cmake-build*
+*.user
+
 
 # Compiled Object files
 *.slo

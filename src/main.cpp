@@ -87,6 +87,10 @@ void invokeStringMethodSync(jcon::JsonRpcClient* rpc_client)
     }
 }
 
+void invokeNotification(jcon::JsonRpcClient *rpc_client) {
+    rpc_client->notification("printNotification", "hello, world Notification");
+}
+
 int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
@@ -94,6 +98,7 @@ int main(int argc, char* argv[])
     startServer(&app);
     auto rpc_client = startClient(&app);
 
+    invokeNotification(rpc_client);
     invokeMethodAsync(rpc_client);
     invokeMethodSync(rpc_client);
     invokeStringMethodSync(rpc_client);
