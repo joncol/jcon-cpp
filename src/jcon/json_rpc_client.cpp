@@ -167,6 +167,15 @@ QJsonObject JsonRpcClient::createRequestJsonObject(const QString& method,
     };
 }
 
+QJsonObject JsonRpcClient::createNotificationJsonObject(const QString& method)
+{
+    return QJsonObject {
+            { "jsonrpc", "2.0" },
+            { "method", method },
+            { "id", "null" }
+    };
+}
+
 bool JsonRpcClient::connectToServer(const QString& host, int port)
 {
     if (!m_endpoint->connectToHost(host, port)) {
@@ -232,6 +241,7 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
             }
             emit it.value()->error(code, msg, data);
             m_outstanding_requests.erase(it);
+            --m_outstanding_request_count;
         }
 
         return;

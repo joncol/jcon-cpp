@@ -12,7 +12,12 @@ int ExampleService::getRandomInt(int limit)
     return qrand() % limit;
 }
 
-void ExampleService::printMessage(const QString& msg)
+QString ExampleService::printMessage(const QString& msg)
 {
     qDebug().noquote() << QString("-> printMessage: '%1'").arg(msg);
+    return QString("Return: '%1'").arg(msg);
+}
+
+void ExampleService::printNotification(const QString &msg) {
+    qDebug().noquote() << QString("-> printNotification: '%1'").arg(msg);
 }
