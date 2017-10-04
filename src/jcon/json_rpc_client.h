@@ -46,9 +46,6 @@ public:
     int serverPort() const;
 
     template<typename... T>
-    void notification(const QString& method, T&&... args);
-
-    template<typename... T>
     std::shared_ptr<JsonRpcResult> call(const QString& method, T&&... args);
 
     template<typename... T>
@@ -62,6 +59,9 @@ public:
     /// Expand arguments in list before making the RPC call
     std::shared_ptr<JsonRpcRequest>
         callAsyncExpandArgs(const QString& method, const QVariantList& args);
+
+    template<typename... T>
+    void notification(const QString& method, T&&... args);
 
     int outstandingRequestCount() const;
 
@@ -93,10 +93,6 @@ private:
         waitForSyncCallbacks(const JsonRpcRequest* request);
 
     template<typename... T>
-    void doNotification(const QString& method,
-                                           T&&... args);
-
-    template<typename... T>
     std::shared_ptr<JsonRpcRequest> doCall(const QString& method,
                                            bool async,
                                            T&&... args);
@@ -105,6 +101,11 @@ private:
         doCallExpandArgs(const QString& method,
                          bool async,
                          const QVariantList& args);
+
+    template<typename... T>
+    void doNotification(const QString& method, T&&... args);
+
+    void verifyConnected(const QString& method);
 
     std::pair<std::shared_ptr<JsonRpcRequest>, QJsonObject>
         prepareCall(const QString& method);
@@ -142,13 +143,6 @@ private:
     ResultMap m_results;
 };
 
-    template<typename... Ts>
-    void
-    JsonRpcClient::notification(const QString& method, Ts&&... args)
-    {
-        doNotification(method, std::forward<Ts>(args)...);
-    }
-
 template<typename... Ts>
 std::shared_ptr<JsonRpcResult>
 JsonRpcClient::call(const QString& method, Ts&&... args)
@@ -164,42 +158,17 @@ JsonRpcClient::callAsync(const QString& method, Ts&&... args)
     return doCall(method, true, std::forward<Ts>(args)...);
 }
 
-    template<typename... Ts>
-    void
-    JsonRpcClient::doNotification(const QString& method, Ts&&... args)
-    {
-        if (!isConnected()) {
-            auto msg = QString("cannot call RPC method (%1) when not connected")
-                    .arg(method);
-            m_logger->logError(msg);
-            throw std::runtime_error(msg.toStdString());
-        }
+template<typename... Ts>
+void JsonRpcClient::notification(const QString& method, Ts&&... args)
+{
+    doNotification(method, std::forward<Ts>(args)...);
+}
 
-
-        QJsonObject req_json_obj;
-        req_json_obj = createNotificationJsonObject(method);
-
-        QVariantList param_list;
-        convertToQVariantList(param_list, std::forward<Ts>(args)...);
-        req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
-
-//        m_logger->logInfo(
-//                formatLogMessage(method, param_list, async, request->id()));
-
-        m_endpoint->send(QJsonDocument(req_json_obj));
-
-    }
-
-    template<typename... Ts>
+template<typename... Ts>
 std::shared_ptr<JsonRpcRequest>
 JsonRpcClient::doCall(const QString& method, bool async, Ts&&... args)
 {
-    if (!isConnected()) {
-        auto msg = QString("cannot call RPC method (%1) when not connected")
-            .arg(method);
-        m_logger->logError(msg);
-        throw std::runtime_error(msg.toStdString());
-    }
+    verifyConnected(method);
 
     std::shared_ptr<JsonRpcRequest> request;
     QJsonObject req_json_obj;
@@ -215,6 +184,21 @@ JsonRpcClient::doCall(const QString& method, bool async, Ts&&... args)
     m_endpoint->send(QJsonDocument(req_json_obj));
 
     return request;
+}
+
+template<typename... Ts>
+void JsonRpcClient::doNotification(const QString& method, Ts&&... args)
+{
+    verifyConnected(method);
+
+    QJsonObject req_json_obj;
+    req_json_obj = createNotificationJsonObject(method);
+
+    QVariantList param_list;
+    convertToQVariantList(param_list, std::forward<Ts>(args)...);
+    req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
+
+    m_endpoint->send(QJsonDocument(req_json_obj));
 }
 
 template<typename T>

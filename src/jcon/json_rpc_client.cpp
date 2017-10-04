@@ -129,6 +129,16 @@ int JsonRpcClient::outstandingRequestCount() const
     return m_outstanding_request_count;
 }
 
+void JsonRpcClient::verifyConnected(const QString& method)
+{
+    if (!isConnected()) {
+        auto msg = QString("cannot call RPC method (%1) when not connected")
+            .arg(method);
+        m_logger->logError(msg);
+        throw std::runtime_error(msg.toStdString());
+    }
+}
+
 std::pair<std::shared_ptr<JsonRpcRequest>, QJsonObject>
 JsonRpcClient::prepareCall(const QString& method)
 {
@@ -169,11 +179,7 @@ QJsonObject JsonRpcClient::createRequestJsonObject(const QString& method,
 
 QJsonObject JsonRpcClient::createNotificationJsonObject(const QString& method)
 {
-    return QJsonObject {
-            { "jsonrpc", "2.0" },
-            { "method", method },
-            { "id", "null" }
-    };
+    return createRequestJsonObject(method, "null");
 }
 
 bool JsonRpcClient::connectToServer(const QString& host, int port)
