@@ -187,7 +187,14 @@ bool JsonRpcClient::connectToServer(const QString& host, int port)
     if (!m_endpoint->connectToHost(host, port)) {
         return false;
     }
+    return true;
+}
 
+bool JsonRpcClient::connectToServer(const QUrl& url)
+{
+    if (!m_endpoint->connectToUrl(url)) {
+        return false;
+    }
     return true;
 }
 

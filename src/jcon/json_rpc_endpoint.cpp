@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTcpSocket>
+#include <QUrl>
 
 namespace jcon {
 
@@ -58,6 +59,30 @@ bool JsonRpcEndpoint::connectToHost(const QString& host, int port, int msecs)
 void JsonRpcEndpoint::connectToHostAsync(const QString& host, int port)
 {
     m_socket->connectToHost(host, port);
+}
+
+bool JsonRpcEndpoint::connectToUrl(const QUrl& url, int msecs)
+{
+    m_logger->logInfo(QString("connecting to JSON RPC server at %1")
+                      .arg(url.toString()));
+
+    m_socket->connectToUrl(url);
+
+    if (!m_socket->waitForConnected(msecs)) {
+        m_logger->logError("could not connect to JSON RPC server: " +
+                           m_socket->errorString());
+        return false;
+    }
+
+    m_logger->logInfo(QString("connected to JSON RPC server %1 "
+                              "(local port: %3)")
+                      .arg(url.toString()).arg(m_socket->localPort()));
+    return true;
+}
+
+void JsonRpcEndpoint::connectToUrlAsync(const QUrl& url)
+{
+    m_socket->connectToUrl(url);
 }
 
 void JsonRpcEndpoint::disconnectFromHost()

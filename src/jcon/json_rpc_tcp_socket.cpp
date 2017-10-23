@@ -1,6 +1,8 @@
 #include "json_rpc_tcp_socket.h"
 #include "jcon_assert.h"
 
+#include <QUrl>
+
 namespace jcon {
 
 JsonRpcTcpSocket::JsonRpcTcpSocket()
@@ -44,11 +46,16 @@ void JsonRpcTcpSocket::setupSocket()
             });
 }
 
-void JsonRpcTcpSocket::connectToHost(QString host, int port)
+void JsonRpcTcpSocket::connectToHost(const QString& host, int port)
 {
     m_socket->connectToHost(host, port,
                             QIODevice::ReadWrite,
                             QAbstractSocket::IPv4Protocol);
+}
+
+void JsonRpcTcpSocket::connectToUrl(const QUrl& url)
+{
+    connectToHost(url.host(), url.port());
 }
 
 bool JsonRpcTcpSocket::waitForConnected(int msecs)

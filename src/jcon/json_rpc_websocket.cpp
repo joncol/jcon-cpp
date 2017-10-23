@@ -46,12 +46,17 @@ void JsonRpcWebSocket::setupSocket()
             });
 }
 
-void JsonRpcWebSocket::connectToHost(QString host, int port)
+void JsonRpcWebSocket::connectToHost(const QString& host, int port)
 {
     QUrl url;
     url.setScheme("ws");
     url.setHost(host);
     url.setPort(port);
+    m_socket->open(url);
+}
+
+void JsonRpcWebSocket::connectToUrl(const QUrl& url)
+{
     m_socket->open(url);
 }
 

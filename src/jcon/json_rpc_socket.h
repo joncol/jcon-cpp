@@ -15,7 +15,8 @@ public:
     JsonRpcSocket() {}
     virtual ~JsonRpcSocket() {}
 
-    virtual void connectToHost(QString host, int port) = 0;
+    virtual void connectToHost(const QString& host, int port) = 0;
+    virtual void connectToUrl(const QUrl& url) = 0;
     virtual bool waitForConnected(int msecs = 30000) = 0;
     virtual void disconnectFromHost() = 0;
     virtual bool isConnected() const = 0;

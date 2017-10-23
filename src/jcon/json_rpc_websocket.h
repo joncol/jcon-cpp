@@ -28,7 +28,8 @@ public:
 
     virtual ~JsonRpcWebSocket();
 
-    void connectToHost(QString host, int port) override;
+    void connectToHost(const QString& host, int port) override;
+    void connectToUrl(const QUrl& url) override;
     bool waitForConnected(int msecs) override;
     void disconnectFromHost() override;
     bool isConnected() const override;
