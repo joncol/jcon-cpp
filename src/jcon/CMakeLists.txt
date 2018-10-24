@@ -14,8 +14,8 @@ add_definitions(-DJCON_DLL)
 
 add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_headers} ${${PROJECT_NAME}_sources})
 
-find_package(Qt5 COMPONENTS Core)
-qt5_use_modules(${PROJECT_NAME} Core Network Test WebSockets Widgets)
+find_package(Qt5 COMPONENTS Core Network Test WebSockets)
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Test Qt5::WebSockets)
 
 install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin
