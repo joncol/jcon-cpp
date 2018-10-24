@@ -7,8 +7,6 @@
 #include <jcon/json_rpc_websocket_server.h>
 
 #include <QCoreApplication>
-#include <QPushButton>
-#include <QThread>
 #include <QUrl>
 
 #include <ctime>
