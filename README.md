@@ -21,8 +21,9 @@ Platforms supported are: Linux, Windows, Mac OS, and Android.
 4. `cmake ..`
 5. `make -j4`
 
-The build depends on the environment variable `QTDIR` to find the required Qt
-dependencies.
+The build depends on the build directive `CMAKE_PREFIX_PATH` to find the
+required Qt dependencies, so if your CMake doesn't pick up on where to find Qt,
+try adding `cmake -DCMAKE_PREFIX_PATH=<QTDIR> ..` in step 4 above.
 
 ## Creating a Server
 

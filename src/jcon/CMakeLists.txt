@@ -1,11 +1,7 @@
 project(jcon)
 
-set(QTDIR $ENV{QTDIR})
-set(Q5_DIR $ENV{QTDIR})
-
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_PREFIX_PATH ${QTDIR})
 
 file(GLOB ${PROJECT_NAME}_headers *.h)
 file(GLOB ${PROJECT_NAME}_sources *.cpp)
