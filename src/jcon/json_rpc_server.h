@@ -23,8 +23,8 @@ public:
 
     void registerServices(const QObjectList& services);
 
-    virtual void listen(int port) = 0;
-    virtual void listen(const QHostAddress& addr, int port) = 0;
+    virtual bool listen(int port) = 0;
+    virtual bool listen(const QHostAddress& addr, int port) = 0;
 
     virtual void close() = 0;
 
