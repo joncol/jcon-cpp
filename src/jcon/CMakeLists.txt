@@ -17,3 +17,14 @@ install(TARGETS ${PROJECT_NAME}
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib/static)
+
+
+# Introduce variables:
+# * CMAKE_INSTALL_LIBDIR
+# * CMAKE_INSTALL_BINDIR
+# * CMAKE_INSTALL_INCLUDEDIR
+include(GNUInstallDirs)
+
+install(
+    FILES ${${PROJECT_NAME}_headers} 
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/jcon")
