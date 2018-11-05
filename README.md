@@ -147,6 +147,13 @@ single argument), use `callExpandArgs` and `callAsyncExpandArgs`.
 Bug reports and pull requests are welcome on GitHub at
 https://github.com/joncol/jcon-cpp.
 
+Please follow these
+[guidelines](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)
+for creating commit messages.
+
+Also make sure to follow the existing code style. No lines with more than 80
+characters, spaces instead of tabs for instance.
+
 
 ## License
 
