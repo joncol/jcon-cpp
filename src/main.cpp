@@ -1,6 +1,5 @@
 #include "example_service.h"
 
-#include <jcon/json_rpc_file_logger.h>
 #include <jcon/json_rpc_tcp_client.h>
 #include <jcon/json_rpc_tcp_server.h>
 #include <jcon/json_rpc_websocket_client.h>
