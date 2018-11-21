@@ -4,7 +4,7 @@ JCON-CPP is a portable C++ JSON RPC 2.0 library that depends on Qt.
 
 ## Introduction
 
-If you're using **C++ 11** and **Qt**, and want to create a **JSON RPC 2.0**
+If you're using **C++ 14** and **Qt**, and want to create a **JSON RPC 2.0**
 client or server, using either **TCP** or **WebSockets** as underlying transport
 layer, then **JCON-CPP** might prove useful.
 
