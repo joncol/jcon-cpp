@@ -25,6 +25,21 @@ The build depends on the build directive `CMAKE_PREFIX_PATH` to find the
 required Qt dependencies, so if your CMake doesn't pick up on where to find Qt,
 try adding `cmake -DCMAKE_PREFIX_PATH=<QTDIR> ..` in step 4 above.
 
+## Include Files
+
+Depending on if you're implementing a server or a client and whether you're
+using TCP or WebSockets, you need to include some of these files:
+```c++
+#include <jcon/json_rpc_tcp_client.h>
+#include <jcon/json_rpc_tcp_server.h>
+#include <jcon/json_rpc_websocket_client.h>
+#include <jcon/json_rpc_websocket_server.h>
+```
+
+## Example Code
+
+There's example code of both a server and a client in the file `src/main.cpp`.
+
 ## Creating a Server
 
 ```c++
