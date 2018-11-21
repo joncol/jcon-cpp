@@ -67,7 +67,6 @@ private:
               const QVariantMap& args,
               QVariant& return_value);
 
-
     bool convertArgs(const QMetaMethod& meta_method,
                      const QVariantList& args,
                      QVariantList& converted);
