@@ -105,7 +105,10 @@ bool JsonRpcServer::dispatch(const QString& method_name,
 {
     for (auto& s : m_services) {
         const QMetaObject* meta_obj = s->metaObject();
-        for (int i = 0; i < meta_obj->methodCount(); ++i) {
+        for (int i = meta_obj->methodOffset();
+             i < meta_obj->methodCount();
+             ++i)
+        {
             auto meta_method = meta_obj->method(i);
             if (meta_method.name() == method_name) {
                 if (params.type() == QVariant::List ||
