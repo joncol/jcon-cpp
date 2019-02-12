@@ -146,6 +146,10 @@ bool JsonRpcServer::dispatch(const QString& method_name,
                     if (call(s, meta_method, params.toMap(), return_value)) {
                         return true;
                     }
+                } else if (params.type() == QVariant::Invalid) {
+                    if (call(s, meta_method, QVariantList(), return_value)) {
+                        return true;
+                    }
                 }
             }
         }
