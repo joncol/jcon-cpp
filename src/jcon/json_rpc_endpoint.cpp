@@ -138,7 +138,7 @@ QByteArray JsonRpcEndpoint::processBuffer(const QByteArray& buffer,
 
     JCON_ASSERT(buf[0] == '{');
     if (buf[0] != '{') {
-        m_logger->logError("malformed request");
+        m_logger->logError("Malformed request");
         return nullptr;
     }
 
