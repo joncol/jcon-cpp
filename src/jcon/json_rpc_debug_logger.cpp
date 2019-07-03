@@ -3,7 +3,7 @@
 #include <QDebug>
 
 namespace jcon {
-    
+
 void JsonRpcDebugLogger::logDebug(const QString& message)
 {
     qDebug().noquote() << message;
