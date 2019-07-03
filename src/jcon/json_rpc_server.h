@@ -48,6 +48,11 @@ public:
 
     virtual void close() = 0;
 
+    /**
+     * Get the currently calling client endpoint.
+     */
+    static JsonRpcEndpoint* clientEndpoint();
+
 protected:
     virtual JsonRpcEndpoint* findClient(QObject* socket) = 0;
     virtual QVector<JsonRpcEndpoint*> getAllClients() = 0;
@@ -121,6 +126,8 @@ private:
 
     // allows unsolicited notifications (not part of JSON-RPC standard)
     bool m_allowNotification;
+
+    static JsonRpcEndpoint* sm_client_endpoint;
 };
 
 }

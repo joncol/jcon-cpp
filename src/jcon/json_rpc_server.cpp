@@ -21,6 +21,8 @@ namespace jcon {
 
 const QString JsonRpcServer::InvalidRequestId = "";
 
+JsonRpcEndpoint* JsonRpcServer::sm_client_endpoint = nullptr;
+
 JsonRpcServer::JsonRpcServer(QObject* parent,
                              std::shared_ptr<JsonRpcLogger> logger)
     : QObject(parent)
@@ -96,6 +98,11 @@ void JsonRpcServer::enableSendNotification(bool enabled)
     m_allowNotification = enabled;
 }
 
+JsonRpcEndpoint* JsonRpcServer::clientEndpoint()
+{
+    return sm_client_endpoint;
+}
+
 void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
                                         QObject* socket)
 {
@@ -105,6 +112,8 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
         logError("invalid protocol tag");
         return;
     }
+
+    sm_client_endpoint = findClient(socket);
 
     QString method_name = request.value("method").toString();
     if (method_name.isEmpty()) {
@@ -127,13 +136,12 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
                                     JsonRpcError::EC_MethodNotFound,
                                     msg);
 
-            JsonRpcEndpoint* endpoint = findClient(socket);
-            if (!endpoint) {
+            if (!sm_client_endpoint) {
                 logError("invalid client socket, cannot send response");
                 return;
             }
 
-            endpoint->send(error);
+            sm_client_endpoint->send(error);
             return;
         }
     }
@@ -144,13 +152,12 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
                                                 return_value,
                                                 method_name);
 
-        JsonRpcEndpoint* endpoint = findClient(socket);
-        if (!endpoint) {
+        if (!sm_client_endpoint) {
             logError("invalid client socket, cannot send response");
             return;
         }
 
-        endpoint->send(response);
+        sm_client_endpoint->send(response);
     }
 }
 
