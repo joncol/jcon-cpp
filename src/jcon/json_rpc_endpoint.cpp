@@ -153,12 +153,12 @@ QByteArray JsonRpcEndpoint::processBuffer(const QByteArray& buf,
         if (!in_string) {
             if (curr_ch == '{')
                 ++brace_nesting_level;
-            else  if (curr_ch == '}') {
+            else if (curr_ch == '}') {
                 --brace_nesting_level;
                 JCON_ASSERT(brace_nesting_level >= 0);
 
                 if (brace_nesting_level == 0) {
-                    auto doc = QJsonDocument::fromJson(buf.mid(start, i-start));
+                    auto doc = QJsonDocument::fromJson(buf.mid(start, i - start));
                     JCON_ASSERT(!doc.isNull());
                     JCON_ASSERT(doc.isObject());
                     if (doc.isObject())
