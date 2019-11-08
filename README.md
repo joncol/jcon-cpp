@@ -13,6 +13,12 @@ method.
 
 Platforms supported are: Linux, Windows, Mac OS, and Android.
 
+## Support
+
+If you get value out of this library, consider making a small donation via
+[patreon](https://www.patreon.com/bePatron?u=26713807). Any contribution is
+highly welcome!
+
 ## Building the Library
 
 1. Get the source.
