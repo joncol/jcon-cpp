@@ -15,7 +15,8 @@
 
 enum class SocketType {tcp, websocket};
 
-jcon::JsonRpcServer* startServer(QObject* parent, SocketType socket_type = SocketType::tcp)
+jcon::JsonRpcServer* startServer(QObject* parent,
+                                 SocketType socket_type = SocketType::tcp)
 {
     jcon::JsonRpcServer* rpc_server;
     if (socket_type == SocketType::tcp) {
@@ -31,8 +32,9 @@ jcon::JsonRpcServer* startServer(QObject* parent, SocketType socket_type = Socke
     return rpc_server;
 }
 
-jcon::JsonRpcServer* startNamespacedServer(QObject* parent,
-                                           SocketType socket_type = SocketType::tcp)
+jcon::JsonRpcServer* startNamespacedServer(
+    QObject* parent,
+    SocketType socket_type = SocketType::tcp)
 {
     jcon::JsonRpcServer* rpc_server;
     if (socket_type == SocketType::tcp) {
