@@ -118,6 +118,26 @@ void invokeStringMethodAsync(jcon::JsonRpcClient* rpc_client)
                  });
 }
 
+void invokeNamedParamsMethodAsync(jcon::JsonRpcClient* rpc_client)
+{
+    auto req = rpc_client->callAsync("namedParams",
+                                     QVariantMap{
+                                         {"msg", "hello, world"},
+                                         {"answer", 42}
+                                     });
+
+    req->connect(req.get(), &jcon::JsonRpcRequest::result,
+                 [](const QVariant& result) {
+                     qDebug() << "result of asynchronous RPC call:" << result;
+                 });
+
+    req->connect(req.get(), &jcon::JsonRpcRequest::error,
+                 [](int code, const QString& message, const QVariant& data) {
+                     qDebug() << "RPC error:" << message
+                              << " (" << code << ")";
+                 });
+}
+
 void invokeStringMethodSync(jcon::JsonRpcClient* rpc_client)
 {
     qsrand(std::time(nullptr));
@@ -185,6 +205,7 @@ int main(int argc, char* argv[])
         invokeMethodSync(rpc_client);
         invokeStringMethodSync(rpc_client);
         invokeStringMethodAsync(rpc_client);
+        invokeNamedParamsMethodAsync(rpc_client);
 
         waitForOutstandingRequests(rpc_client);
         delete server;

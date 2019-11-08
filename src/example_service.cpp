@@ -21,3 +21,11 @@ QString ExampleService::printMessage(const QString& msg)
 void ExampleService::printNotification(const QString &msg) {
     qDebug().noquote() << QString("-> printNotification: '%1'").arg(msg);
 }
+
+void ExampleService::namedParams(const QVariantMap& m)
+{
+    qDebug().noquote() << QString("-> namedParams");
+    qDebug().noquote() << QString("  Argument count: %1").arg(m.keys().size());
+    qDebug().noquote() << m["msg"].toString();
+    qDebug().noquote() << m["answer"].toInt();
+}
