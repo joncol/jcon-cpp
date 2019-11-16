@@ -69,4 +69,9 @@ if(MINGW)
         $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif()
 
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+
+add_test(NAME test_jcon_cpp COMMAND test_jcon_cpp)
+
 add_subdirectory(jcon)
+add_subdirectory(test/test_jcon_cpp)
