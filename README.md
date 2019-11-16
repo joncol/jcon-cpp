@@ -1,12 +1,12 @@
-## JCON-CPP
+## jcon-cpp
 
-JCON-CPP is a portable C++ JSON RPC 2.0 library that depends on Qt.
+jcon-cpp is a portable C++ JSON RPC 2.0 library that depends on Qt.
 
 ## Introduction
 
 If you're using **C++ 14** and **Qt**, and want to create a **JSON RPC 2.0**
 client or server, using either **TCP** or **WebSockets** as underlying transport
-layer, then **JCON-CPP** might prove useful.
+layer, then **jcon-cpp** might prove useful.
 
 In all of the following, replace "Tcp" with "WebSocket" to change the transport
 method.
@@ -157,6 +157,14 @@ if (result->isSuccess()) {
 If you want to expand a list of arguments (instead of passing the list as a
 single argument), use `callExpandArgs` and `callAsyncExpandArgs`.
 
+
+### Named Parameters
+
+If you want to call a function using named parameters, use `callNamedParams` and
+`callAsyncNamedParams`. This will pass the parameters as a `QVariantMap` instead
+of converting it to a `QVariantList`.
+
+Named parameters are automatically handled on the (jcon-cpp) server side.
 
 ## Known Issues
 

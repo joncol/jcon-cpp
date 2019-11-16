@@ -120,11 +120,11 @@ void invokeStringMethodAsync(jcon::JsonRpcClient* rpc_client)
 
 void invokeNamedParamsMethodAsync(jcon::JsonRpcClient* rpc_client)
 {
-    auto req = rpc_client->callAsync("namedParams",
-                                     QVariantMap{
-                                         {"msg", "hello, world"},
-                                         {"answer", 42}
-                                     });
+    auto req = rpc_client->callAsyncNamedParams("namedParams",
+                                                QVariantMap{
+                                                    {"msg", "hello, world"},
+                                                    {"answer", 42}
+                                                });
 
     req->connect(req.get(), &jcon::JsonRpcRequest::result,
                  [](const QVariant& result) {

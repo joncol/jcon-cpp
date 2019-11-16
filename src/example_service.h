@@ -12,5 +12,5 @@ public:
     Q_INVOKABLE int getRandomInt(int limit);
     Q_INVOKABLE QString printMessage(const QString& msg);
     Q_INVOKABLE void printNotification(const QString& msg);
-    Q_INVOKABLE void namedParams(const QVariantMap& m);
+    Q_INVOKABLE void namedParams(QString& msg, int answer);
 };

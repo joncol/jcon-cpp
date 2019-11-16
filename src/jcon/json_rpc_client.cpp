@@ -124,6 +124,39 @@ JsonRpcClient::doCallExpandArgs(const QString& method,
     return request;
 }
 
+std::shared_ptr<JsonRpcResult>
+JsonRpcClient::callNamedParams(const QString& method, const QVariantMap& args)
+{
+    auto req = doCallNamedParams(method, false, args);
+    return waitForSyncCallbacks(req.get());
+}
+
+std::shared_ptr<JsonRpcRequest>
+JsonRpcClient::callAsyncNamedParams(const QString& method,
+                                    const QVariantMap& args)
+{
+    return doCallNamedParams(method, true, args);
+}
+
+std::shared_ptr<JsonRpcRequest>
+JsonRpcClient::doCallNamedParams(const QString& method,
+                                 bool async,
+                                 const QVariantMap& args)
+{
+    std::shared_ptr<JsonRpcRequest> request;
+    QJsonObject req_json_obj;
+    std::tie(request, req_json_obj) = prepareCall(method);
+
+    if (!args.empty()) {
+        req_json_obj["params"] = QJsonObject::fromVariantMap(args);
+    }
+
+    m_logger->logInfo(formatLogMessage(method, args, async, request->id()));
+    m_endpoint->send(QJsonDocument(req_json_obj));
+
+    return request;
+}
+
 int JsonRpcClient::outstandingRequestCount() const
 {
     return m_outstanding_request_count;
@@ -313,6 +346,20 @@ QString JsonRpcClient::formatLogMessage(const QString& method,
             .arg(args.size() == 1 ? "" : "s")
             .arg(variantListToStringList(args).join(", "));
     }
+    msg += QString(" (request ID: %1)").arg(request_id);
+    return msg;
+}
+
+QString JsonRpcClient::formatLogMessage(const QString& method,
+                                        const QVariantMap& args,
+                                        bool async,
+                                        const QString& request_id)
+{
+    auto msg = QString("Calling (%1) RPC method: '%2' ")
+        .arg(async ? "async" : "sync").arg(method);
+
+    msg += QString("with named parameters: %1")
+        .arg(variantMapToStringList(args).join(", "));
     msg += QString(" (request ID: %1)").arg(request_id);
     return msg;
 }
