@@ -1,5 +1,3 @@
-project(jcon_ex)
-
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 file(GLOB ${PROJECT_NAME}_headers *.h)
