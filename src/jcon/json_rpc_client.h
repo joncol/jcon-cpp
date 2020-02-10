@@ -61,6 +61,14 @@ public:
     std::shared_ptr<JsonRpcRequest>
         callAsyncExpandArgs(const QString& method, const QVariantList& args);
 
+    /// Named parameters
+    std::shared_ptr<JsonRpcRequest>
+        callAsyncNamedParams(const QString& method, const QVariantMap& args);
+
+    /// Named parameters
+    std::shared_ptr<JsonRpcResult>
+        callNamedParams(const QString& method, const QVariantMap& args);
+
     template<typename... T>
     void notification(const QString& method, T&&... args);
 
@@ -90,6 +98,11 @@ private:
                                     bool async,
                                     const QString& request_id);
 
+    static QString formatLogMessage(const QString& method,
+                                    const QVariantMap& args,
+                                    bool async,
+                                    const QString& request_id);
+
     std::shared_ptr<JsonRpcResult>
         waitForSyncCallbacks(const JsonRpcRequest* request);
 
@@ -102,6 +115,11 @@ private:
         doCallExpandArgs(const QString& method,
                          bool async,
                          const QVariantList& args);
+
+    std::shared_ptr<JsonRpcRequest>
+        doCallNamedParams(const QString& method,
+                          bool async,
+                          const QVariantMap& args);
 
     template<typename... T>
     void doNotification(const QString& method, T&&... args);
