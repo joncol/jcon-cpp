@@ -194,9 +194,8 @@ JsonRpcClient::doCall(const QString& method, bool async, Ts&&... args)
     std::tie(request, req_json_obj) = prepareCall(method);
 
     QVariantList param_list;
-    constexpr std::size_t numb_args = sizeof...(Ts);
-    if ( numb_args != 0 )
-    {
+    constexpr std::size_t arg_count = sizeof...(Ts);
+    if (arg_count != 0) {
         convertToQVariantList(param_list, std::forward<Ts>(args)...);
         req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
     }
