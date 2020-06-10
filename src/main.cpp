@@ -83,7 +83,7 @@ void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
                  });
 
     req->connect(req.get(), &jcon::JsonRpcRequest::error,
-                 [](int code, const QString& message, const QVariant& data) {
+                 [](int code, const QString& message) {
                      qDebug() << "RPC error:" << message
                               << " (" << code << ")";
                  });
@@ -112,7 +112,7 @@ void invokeStringMethodAsync(jcon::JsonRpcClient* rpc_client)
                  });
 
     req->connect(req.get(), &jcon::JsonRpcRequest::error,
-                 [](int code, const QString& message, const QVariant& data) {
+                 [](int code, const QString& message) {
                      qDebug() << "RPC error:" << message
                               << " (" << code << ")";
                  });
@@ -132,7 +132,7 @@ void invokeNamedParamsMethodAsync(jcon::JsonRpcClient* rpc_client)
                  });
 
     req->connect(req.get(), &jcon::JsonRpcRequest::error,
-                 [](int code, const QString& message, const QVariant& data) {
+                 [](int code, const QString& message) {
                      qDebug() << "RPC error:" << message
                               << " (" << code << ")";
                  });
