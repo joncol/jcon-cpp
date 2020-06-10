@@ -70,7 +70,7 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
     QString request_id = request.value("id").toVariant().toString();
 
     QVariant return_value;
-    if (!dispatch(method_name, params, request_id, return_value)) {
+    if (!dispatch(method_name, params, return_value)) {
         auto msg = QString("method '%1' not found, check name and "
                            "parameter types ").arg(method_name);
         logError(msg);
@@ -111,7 +111,6 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
 
 bool JsonRpcServer::dispatch(const QString& method_name,
                              const QVariant& params,
-                             const QString& request_id,
                              QVariant& return_value)
 {
     QString method_ns;
