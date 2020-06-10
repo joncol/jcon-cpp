@@ -194,8 +194,12 @@ JsonRpcClient::doCall(const QString& method, bool async, Ts&&... args)
     std::tie(request, req_json_obj) = prepareCall(method);
 
     QVariantList param_list;
-    convertToQVariantList(param_list, std::forward<Ts>(args)...);
-    req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
+    constexpr std::size_t numb_args = sizeof...(Ts);
+    if ( numb_args != 0 )
+    {
+        convertToQVariantList(param_list, std::forward<Ts>(args)...);
+        req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
+    }
 
     m_logger->logInfo(
         formatLogMessage(method, param_list, async, request->id()));
@@ -214,8 +218,12 @@ void JsonRpcClient::doNotification(const QString& method, Ts&&... args)
     req_json_obj = createNotificationJsonObject(method);
 
     QVariantList param_list;
-    convertToQVariantList(param_list, std::forward<Ts>(args)...);
-    req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
+    constexpr std::size_t numb_args = sizeof...(Ts);
+    if ( numb_args != 0 )
+    {
+        convertToQVariantList(param_list, std::forward<Ts>(args)...);
+        req_json_obj["params"] = QJsonArray::fromVariantList(param_list);
+    }
 
     m_endpoint->send(QJsonDocument(req_json_obj));
 }
