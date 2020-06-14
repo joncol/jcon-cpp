@@ -4,8 +4,9 @@
 #include "jcon_assert.h"
 #include "string_util.h"
 
-#include <QSignalSpy>
 #include <QUuid>
+#include <QEventLoop>
+#include <QCoreApplication>
 
 #include <memory>
 
