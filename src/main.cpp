@@ -1,5 +1,6 @@
 #include "example_service.h"
 #include "other_service.h"
+#include "notification_service.h"
 
 #include <jcon/json_rpc_tcp_client.h>
 #include <jcon/json_rpc_tcp_server.h>
@@ -16,7 +17,8 @@
 enum class SocketType {tcp, websocket};
 
 jcon::JsonRpcServer* startServer(QObject* parent,
-                                 SocketType socket_type = SocketType::tcp)
+                                 SocketType socket_type = SocketType::tcp,
+                                 bool allow_notifications = false)
 {
     jcon::JsonRpcServer* rpc_server;
     if (socket_type == SocketType::tcp) {
@@ -26,15 +28,22 @@ jcon::JsonRpcServer* startServer(QObject* parent,
         qDebug() << "Creating WebSocket server";
         rpc_server = new jcon::JsonRpcWebSocketServer(parent);
     }
-    auto service = new ExampleService;
-    rpc_server->registerServices({ service });
+
+    if (allow_notifications)
+        rpc_server->enableSendNotification(true);
+
+    auto service1 = new ExampleService;
+    auto service2 = new NotificationService;
+
+    rpc_server->registerServices({ service1, service2 });
     rpc_server->listen(6002);
     return rpc_server;
 }
 
 jcon::JsonRpcServer* startNamespacedServer(
     QObject* parent,
-    SocketType socket_type = SocketType::tcp)
+    SocketType socket_type = SocketType::tcp,
+    bool allow_notifications = false)
 {
     jcon::JsonRpcServer* rpc_server;
     if (socket_type == SocketType::tcp) {
@@ -44,19 +53,27 @@ jcon::JsonRpcServer* startNamespacedServer(
         qDebug() << "Creating WebSocket server";
         rpc_server = new jcon::JsonRpcWebSocketServer(parent);
     }
+
+    if (allow_notifications)
+        rpc_server->enableSendNotification(true);
+
     auto service1 = new ExampleService;
     auto service2 = new OtherService;
+    auto service3 = new NotificationService;
+
     rpc_server->registerServices(
         {
             { service1, "ex/myFirstNamespace" },
-            { service2, "ex/myOtherNamespace" }
+            { service2, "ex/myOtherNamespace" },
+            { service3, "ex/myNotificationNamespace" }
         }, "/");
     rpc_server->listen(6002);
     return rpc_server;
 }
 
 jcon::JsonRpcClient* startClient(QObject* parent,
-                                 SocketType socket_type = SocketType::tcp)
+                                 SocketType socket_type = SocketType::tcp,
+                                 bool allow_notifications = false)
 {
     jcon::JsonRpcClient* rpc_client;
     if (socket_type == SocketType::tcp) {
@@ -68,6 +85,10 @@ jcon::JsonRpcClient* startClient(QObject* parent,
         // a QUrl argument.
         rpc_client->connectToServer(QUrl("ws://127.0.0.1:6002"));
     }
+
+    if (allow_notifications)
+        rpc_client->enableReceiveNotification(true);
+
     return rpc_client;
 }
 
@@ -216,6 +237,19 @@ int main(int argc, char* argv[])
         auto rpc_client = startClient(&app, SocketType::tcp);
         invokeNamespacedMethods(rpc_client);
         waitForOutstandingRequests(rpc_client);
+        delete server;
+    }
+
+    {
+        auto server = startServer(nullptr, SocketType::tcp, true);
+        auto rpc_client = startClient(&app, SocketType::tcp, true);
+        QObject::connect(rpc_client, &jcon::JsonRpcClient::notificationReceived,
+            &app, [](const QString& key, const QVariant& value){
+                qDebug() << "Received notification:"
+                         << "Key:" << key
+                         << "Value:" << value;
+            });
+        app.exec();
         delete server;
     }
 }
