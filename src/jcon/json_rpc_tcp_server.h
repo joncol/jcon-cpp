@@ -26,6 +26,7 @@ public:
 
 protected:
     JsonRpcEndpoint* findClient(QObject* socket) override;
+    QVector<JsonRpcEndpoint*> getAllClients() override;
 
 private slots:
     /// Called when the underlying QTcpServer gets a new client connection.

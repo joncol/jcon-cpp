@@ -47,6 +47,7 @@ public:
 
 protected:
     virtual JsonRpcEndpoint* findClient(QObject* socket) = 0;
+    virtual QVector<JsonRpcEndpoint*> getAllClients() = 0;
 
 signals:
     void clientConnected(QObject* client_socket);
