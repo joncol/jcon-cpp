@@ -40,6 +40,9 @@ public:
     void registerServices(const ServiceMap& services,
                           const QString& ns_separator = "/");
 
+    // Allow a server to send unsolicited notifications to client
+    void enableSendNotification(bool enabled);
+
     virtual bool listen(int port) = 0;
     virtual bool listen(const QHostAddress& addr, int port) = 0;
 
@@ -115,6 +118,9 @@ private:
     std::shared_ptr<JsonRpcLogger> m_logger;
     ServiceMap m_services;
     QString m_ns_separator;
+
+    // allows unsolicited notifications (not part of JSON-RPC standard)
+    bool m_allowNotification;
 };
 
 }

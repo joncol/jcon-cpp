@@ -25,6 +25,7 @@ JsonRpcServer::JsonRpcServer(QObject* parent,
                              std::shared_ptr<JsonRpcLogger> logger)
     : QObject(parent)
     , m_logger(logger)
+    , m_allowNotification(false)
 {
     if (!m_logger) {
         m_logger = std::make_shared<JsonRpcFileLogger>("json_server_log.txt");
@@ -38,9 +39,27 @@ JsonRpcServer::~JsonRpcServer()
 void JsonRpcServer::registerServices(const QObjectList& services)
 {
     m_services.clear();
+
+    // unsolicited notification signature
+    QByteArray signature = QMetaObject::normalizedSignature(
+        "sendUnsolicitedNotification(QString,QVariant)");
+
     for (auto s : services) {
         m_services[s] = "";
+        /*
+         * If the server allows sending unsolicited notifications,
+         * and the service emits sendUnsolicitedNotification(QString,QVariant)
+         *  .... add a queued connection
+         */
+        if (m_allowNotification) {
+            int index = s->metaObject()->indexOfSignal(signature);
+            if (index != -1)
+                connect(s, SIGNAL(sendUnsolicitedNotification(QString,QVariant)),
+                        this, SLOT(serviceNotificationReceived(QString,QVariant)),
+                        Qt::QueuedConnection);
+        }
     }
+
     m_ns_separator = "";
 }
 
@@ -49,6 +68,32 @@ void JsonRpcServer::registerServices(const ServiceMap& services,
 {
     m_services = services;
     m_ns_separator = ns_separator;
+
+    // unsolicited notification signature
+    QByteArray signature = QMetaObject::normalizedSignature(
+        "sendUnsolicitedNotification(QString,QVariant)");
+
+    /*
+     * If the server allows sending unsolicited notifications,
+     * and the service emits sendUnsolicitedNotification(QString,QVariant)
+     *  .... add a queued connection
+     */
+    if (m_allowNotification) {
+        for (auto it = m_services.begin(); it != m_services.end(); ++it) {
+            QObject* s = it.key();
+            int index = s->metaObject()->indexOfSignal(signature);
+
+            if (index != -1)
+                connect(s, SIGNAL(sendUnsolicitedNotification(QString,QVariant)),
+                        this, SLOT(serviceNotificationReceived(QString,QVariant)),
+                        Qt::QueuedConnection);
+        }
+    }
+}
+
+void JsonRpcServer::enableSendNotification(bool enabled)
+{
+    m_allowNotification = enabled;
 }
 
 void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
