@@ -67,6 +67,9 @@ protected:
     void logError(const QString& msg);
     std::shared_ptr<JsonRpcLogger> log() { return m_logger; }
 
+private slots:
+    void serviceNotificationReceived(const QString& key, const QVariant& value);
+
 private:
     static const QString InvalidRequestId;
 
@@ -106,6 +109,8 @@ private:
     QJsonDocument createErrorResponse(const QString& request_id,
                                       int code,
                                       const QString& message);
+    QJsonDocument createNotification(const QString& key,
+                                     const QVariant& value);
 
     std::shared_ptr<JsonRpcLogger> m_logger;
     ServiceMap m_services;

@@ -421,6 +421,43 @@ QJsonDocument JsonRpcServer::createErrorResponse(const QString& request_id,
     return QJsonDocument(res_json_obj);
 }
 
+QJsonDocument JsonRpcServer::createNotification(const QString& key,
+                                                const QVariant& value)
+{
+    QJsonObject noti_json_obj {
+        { "jsonrpc", "2.0" },
+        { "key", key }
+    };
+
+    if (value.type() == QVariant::Invalid) {
+        noti_json_obj["value"] = QJsonValue();
+    } else if (value.type() == QVariant::List) {
+        auto ret_doc = QJsonDocument::fromVariant(value);
+        noti_json_obj["value"] = ret_doc.array();
+    } else if (value.type() == QVariant::Map) {
+        auto ret_doc = QJsonDocument::fromVariant(value);
+        noti_json_obj["value"] = ret_doc.object();
+    } else if (value.type() == QVariant::Int) {
+        noti_json_obj["value"] = value.toInt();
+    } else if (value.type() == QVariant::LongLong) {
+        noti_json_obj["value"] = value.toLongLong();
+    } else if (value.type() == QVariant::Double) {
+        noti_json_obj["value"] = value.toDouble();
+    } else if (value.type() == QVariant::Bool) {
+        noti_json_obj["value"] = value.toBool();
+    } else if (value.type() == QVariant::String) {
+        noti_json_obj["value"] = value.toString();
+    } else {
+        auto msg =
+            QString("unknown return type: %1")
+                .arg(value.type());
+        logError(msg);
+        return QJsonDocument();
+    }
+
+    return QJsonDocument(noti_json_obj);
+}
+
 void JsonRpcServer::logInfo(const QString& msg)
 {
     m_logger->logInfo("JSON RPC server: " + msg);
@@ -429,6 +466,21 @@ void JsonRpcServer::logInfo(const QString& msg)
 void JsonRpcServer::logError(const QString& msg)
 {
     m_logger->logError("JSON RPC server error: " + msg);
+}
+
+void JsonRpcServer::serviceNotificationReceived(const QString& key,
+                                                const QVariant& value)
+{
+    if (key.isEmpty())
+        return;
+
+    QJsonDocument response = createNotification(key, value);
+    if (response.isNull())
+        return;
+
+    for (JsonRpcEndpoint* endpoint : getAllClients())
+        if (endpoint != nullptr)
+            endpoint->send(response);
 }
 
 }
