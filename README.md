@@ -44,6 +44,10 @@ There's example code of both a server and a client in the file `src/main.cpp`.
 
 ```c++
 auto rpc_server = new jcon::JsonRpcTcpServer(parent);
+
+// optionally, enable sending unsolicited notifications
+// PS: not part of JSON-RPC standard
+rpc_server->enableSendNotification(true);
 ```
 
 Create a service (a collection of invokable methods):
@@ -51,7 +55,11 @@ Create a service (a collection of invokable methods):
 1. Make your service class inherit `QObject`
 2. Make sure your service method is accessible by the Qt meta object system
    (either by using the `Q_INVOKABLE` macro or by putting the method in a
-   `public slots:` section). For instance:
+   `public slots:` section).
+3. (optionally) Provide unsolicited notifications by emitting `sendUnsolicitedNotification`.
+Requires calling `enableSendNotification(true)` on the server.
+
+For instance:
 
 ```c++
 class ExampleService : public QObject
@@ -63,13 +71,19 @@ public:
     virtual ~ExampleService();
 
     Q_INVOKABLE int getRandomInt(int limit);
+
+signals:
+    void sendUnsolicitedNotification(const QString&, const QVariant&);
 };
 ```
 
-Parameters and return types are automatically matched against the JSON RPC call,
+Parameters and return types of methods are automatically matched against the JSON RPC call,
 using the Qt Meta object system, and you can use lists (`QVariantList`) and
 dictionary type objects (`QVariantMap`) in addition to the standard primitive
 types such as `QString`, `bool`, `int`, `float`, etc.
+
+However, `sendUnsolicitedNotification` signal must be declared exactly as shown in the example.
+The first argument is the notification `key`, and the second argument is the actual unsolicited notification.
 
 Register your service with:
 
@@ -104,6 +118,10 @@ Simple:
 ```c++
 auto rpc_client = new jcon::JsonRpcTcpClient(parent);
 rpc_client->connectToServer("127.0.0.1", 6001);
+
+// optionally, enable receiving unsolicited notifications
+// PS: not part of JSON-RPC standard
+rpc_client->enableSendNotification(true);
 ```
 
 (No need to use a smart pointer here, since the destructor will be called as
@@ -151,6 +169,16 @@ if (result->isSuccess()) {
 }
 ```
 
+### Handling unsolicited notification
+
+```c++
+QObject::connect(rpc_client, &jcon::JsonRpcClient::notificationReceived,
+    &app, [](const QString& key, const QVariant& value){
+        qDebug() << "Received notification:"
+                 << "Key:" << key
+                 << "Value:" << value;
+    });
+```
 
 ### Expanding a List of Arguments
 

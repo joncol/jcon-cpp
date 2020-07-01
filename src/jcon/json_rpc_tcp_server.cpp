@@ -54,6 +54,17 @@ JsonRpcEndpoint* JsonRpcTcpServer::findClient(QObject* socket)
     return (it != m_client_endpoints.end()) ? it->second.get() : nullptr;
 }
 
+QVector<JsonRpcEndpoint*> JsonRpcTcpServer::getAllClients()
+{
+    int size = static_cast<int>(m_client_endpoints.size());
+    QVector<JsonRpcEndpoint*> rpc_endpoints(size, nullptr);
+
+    for (auto const& client_endpoint : m_client_endpoints)
+        rpc_endpoints.append(client_endpoint.second.get());
+
+    return rpc_endpoints;
+}
+
 void JsonRpcTcpServer::newConnection()
 {
     JCON_ASSERT(m_server.hasPendingConnections());

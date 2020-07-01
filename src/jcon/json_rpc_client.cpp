@@ -22,6 +22,7 @@ JsonRpcClient::JsonRpcClient(std::shared_ptr<JsonRpcSocket> socket,
     , m_logger(logger)
     , m_call_timeout_ms(call_timeout_ms)
     , m_outstanding_request_count(0)
+    , m_allowNotification(false)
 {
     if (!m_logger) {
         m_logger = std::make_shared<JsonRpcFileLogger>("json_client_log.txt");
@@ -265,6 +266,11 @@ int JsonRpcClient::serverPort() const
     return m_endpoint->peerPort();
 }
 
+void JsonRpcClient::enableReceiveNotification(bool enabled)
+{
+    m_allowNotification = enabled;
+}
+
 void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
 {
     JCON_ASSERT(response["jsonrpc"].toString() == "2.0");
@@ -294,6 +300,19 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
             --m_outstanding_request_count;
         }
 
+        return;
+    }
+
+    if (m_allowNotification && !response.contains("id")) {
+        if (response["key"].isUndefined() || response["value"].isUndefined()) {
+            logError("key/value is undefined");
+            return;
+        }
+
+        QString key = response.value("key").toString();
+        QVariant value = response.value("value").toVariant();
+
+        emit notificationReceived(key, value);
         return;
     }
 
