@@ -170,7 +170,6 @@ void JsonRpcClient::verifyConnected(const QString& method)
         auto msg = QString("cannot call RPC method (%1) when not connected")
             .arg(method);
         m_logger->logError(msg);
-        throw std::runtime_error(msg.toStdString());
     }
 }
 
