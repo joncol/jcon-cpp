@@ -41,4 +41,7 @@ cmake-build*
 *.exe
 *.out
 *.app
+
 /rtags*
+/.cache/
+/compile_commands.json
