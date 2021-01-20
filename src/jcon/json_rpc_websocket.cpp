@@ -2,7 +2,7 @@
 #include "jcon_assert.h"
 
 #include <QTime>
-#include <QWebSocket>
+#include <QtWebSockets/QWebSocket>
 #include <QEventLoop>
 #include <QCoreApplication>
 

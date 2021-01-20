@@ -2,8 +2,8 @@
 #include "json_rpc_websocket.h"
 #include "jcon_assert.h"
 
-#include <QWebSocket>
-#include <QWebSocketServer>
+#include <QtWebSockets/QWebSocket>
+#include <QtWebSockets/QWebSocketServer>
 
 namespace jcon {
 
