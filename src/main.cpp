@@ -22,10 +22,10 @@ jcon::JsonRpcServer* startServer(QObject* parent,
 {
     jcon::JsonRpcServer* rpc_server;
     if (socket_type == SocketType::tcp) {
-        qDebug() << "Creating TCP server";
+        qDebug() << "Starting TCP server";
         rpc_server = new jcon::JsonRpcTcpServer(parent);
     } else {
-        qDebug() << "Creating WebSocket server";
+        qDebug() << "Starting WebSocket server";
         rpc_server = new jcon::JsonRpcWebSocketServer(parent);
     }
 
@@ -47,10 +47,10 @@ jcon::JsonRpcServer* startNamespacedServer(
 {
     jcon::JsonRpcServer* rpc_server;
     if (socket_type == SocketType::tcp) {
-        qDebug() << "Creating TCP server";
+        qDebug() << "Starting TCP server";
         rpc_server = new jcon::JsonRpcTcpServer(parent);
     } else {
-        qDebug() << "Creating WebSocket server";
+        qDebug() << "Starting WebSocket server";
         rpc_server = new jcon::JsonRpcWebSocketServer(parent);
     }
 
@@ -213,7 +213,11 @@ void waitForOutstandingRequests(jcon::JsonRpcClient* rpc_client)
     }
 }
 
-int main(int argc, char* argv[])
+/**
+ * Example code of running both a server and a client and making some requests
+ * from the client to the server.
+ */
+void runServerAndClient(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
 
@@ -252,4 +256,21 @@ int main(int argc, char* argv[])
         app.exec();
         delete server;
     }
+}
+
+/**
+ * Example of starting a server and keeping it running indefinitely.
+ */
+void runServer(int argc, char* argv[])
+{
+    QCoreApplication app(argc, argv);
+    auto server = startServer(nullptr, SocketType::websocket);
+    app.exec();
+}
+
+int main(int argc, char* argv[])
+{
+    // runServerAndClient(argc, argv);
+    runServer(argc, argv);
+    return 0;
 }
