@@ -82,7 +82,12 @@ void JsonRpcWebSocketServer::newConnection()
         auto rpc_socket = std::make_shared<JsonRpcWebSocket>(web_socket);
 
         auto endpoint =
-            std::make_shared<JsonRpcEndpoint>(rpc_socket, log(), this);
+            std::shared_ptr<JsonRpcEndpoint>(
+                new JsonRpcEndpoint(rpc_socket, log(), this),
+                [](JsonRpcEndpoint* obj) {
+                    obj->deleteLater();
+                }
+            );
 
         connect(endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
                 this, &JsonRpcWebSocketServer::disconnectClient);
