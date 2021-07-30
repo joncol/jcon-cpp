@@ -85,12 +85,7 @@ void JsonRpcTcpServer::newConnection()
         auto rpc_socket = std::make_shared<JsonRpcTcpSocket>(tcp_socket);
 
         auto endpoint =
-            std::shared_ptr<JsonRpcEndpoint>(
-                new JsonRpcEndpoint(rpc_socket, log(), this),
-                [](JsonRpcEndpoint* obj) {
-                    obj->deleteLater();
-                }
-            );
+            std::make_shared<JsonRpcEndpoint>(rpc_socket, log(), this);
 
         connect(endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
                 this, &JsonRpcTcpServer::disconnectClient);
