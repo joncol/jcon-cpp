@@ -38,7 +38,7 @@ bool JsonRpcTcpServer::listen(const QHostAddress& addr, int port)
             .arg(addr.toString()).arg(port);
         logError(qPrintable(msg));
         return false;
-    } 
+    }
     return true;
 }
 

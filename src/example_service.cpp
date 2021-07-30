@@ -1,5 +1,7 @@
 #include "example_service.h"
 
+#include <jcon/json_rpc_tcp_server.h>
+
 #include <QDebug>
 #include <QtGlobal>
 
@@ -9,6 +11,9 @@ ExampleService::~ExampleService() = default;
 
 int ExampleService::getRandomInt(int limit)
 {
+    qDebug().noquote() << QString("-> getRandomInt: '%1' (client IP: %2)")
+        .arg(limit)
+        .arg(jcon::JsonRpcServer::clientEndpoint()->peerAddress().toString());
     return qrand() % limit;
 }
 
