@@ -23,7 +23,7 @@ public:
 
     bool listen(int port) override;
     bool listen(const QHostAddress& addr, int port) override;
-    bool isListening() const ;
+    bool isListening() const;
     void close() override;
 
 protected:
