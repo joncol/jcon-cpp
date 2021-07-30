@@ -270,7 +270,7 @@ void runServer(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-    // runServerAndClient(argc, argv);
-    runServer(argc, argv);
+    runServerAndClient(argc, argv);
+    // runServer(argc, argv);
     return 0;
 }
