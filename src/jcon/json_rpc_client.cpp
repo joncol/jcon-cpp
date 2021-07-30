@@ -7,12 +7,11 @@
 #include <QUuid>
 #include <QEventLoop>
 #include <QCoreApplication>
+#include <QElapsedTimer>
 
 #include <memory>
 
 namespace jcon {
-
-const QString JsonRpcClient::InvalidRequestId = "";
 
 JsonRpcClient::JsonRpcClient(std::shared_ptr<JsonRpcSocket> socket,
                              QObject* parent,
@@ -73,7 +72,7 @@ JsonRpcClient::waitForSyncCallbacks(const JsonRpcRequest* request)
                     std::make_shared<JsonRpcError>(code, message, data);
             });
 
-    QTime timer;
+    QElapsedTimer timer;
     timer.start();
     while (m_outstanding_requests.contains(request->id()) &&
            timer.elapsed() < m_call_timeout_ms)

@@ -74,7 +74,7 @@ private slots:
     void serviceNotificationReceived(const QString& key, const QVariant& value);
 
 private:
-    static const QString InvalidRequestId;
+    const QString InvalidRequestId = "";
 
     bool dispatch(const QString& method_name,
                   const QVariant& params,

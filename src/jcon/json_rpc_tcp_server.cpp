@@ -123,4 +123,9 @@ void JsonRpcTcpServer::disconnectClient(QObject* client_socket)
     emit(clientDisconnected(client_socket));
 }
 
+bool jcon::JsonRpcTcpServer::isListening() const {
+    return m_server.isListening();
+
+}
+
 }

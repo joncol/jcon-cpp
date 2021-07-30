@@ -19,8 +19,6 @@ namespace {
 
 namespace jcon {
 
-const QString JsonRpcServer::InvalidRequestId = "";
-
 JsonRpcServer::JsonRpcServer(QObject* parent,
                              std::shared_ptr<JsonRpcLogger> logger)
     : QObject(parent)

@@ -22,6 +22,7 @@ public:
 
     bool listen(int port) override;
     bool listen(const QHostAddress& addr, int port) override;
+    bool isListening() const;
     void close() override;
 
 protected:
@@ -40,6 +41,7 @@ private:
 
     /// Clients are uniquely identified by their QTcpSocket*.
     std::map<QTcpSocket*, std::shared_ptr<JsonRpcEndpoint>> m_client_endpoints;
+
 };
 
 }

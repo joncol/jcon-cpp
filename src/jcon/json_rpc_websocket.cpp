@@ -5,6 +5,7 @@
 #include <QtWebSockets/QWebSocket>
 #include <QEventLoop>
 #include <QCoreApplication>
+#include <QElapsedTimer>
 
 namespace jcon {
 
@@ -63,7 +64,7 @@ void JsonRpcWebSocket::connectToUrl(const QUrl& url)
 
 bool JsonRpcWebSocket::waitForConnected(int msecs)
 {
-    QTime timer(0, 0, 0, msecs);
+    QElapsedTimer timer;
     bool isConnected = false;
     QObject guard;
     connect(m_socket, &QWebSocket::connected,

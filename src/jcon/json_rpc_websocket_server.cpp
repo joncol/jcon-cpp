@@ -40,6 +40,10 @@ bool JsonRpcWebSocketServer::listen(const QHostAddress& addr, int port)
     return m_server->listen(addr, port);
 }
 
+bool JsonRpcWebSocketServer::isListening() const {
+    return m_server->isListening();
+}
+
 void JsonRpcWebSocketServer::close()
 {
     m_server->close();

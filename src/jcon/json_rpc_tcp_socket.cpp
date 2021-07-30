@@ -38,8 +38,14 @@ void JsonRpcTcpSocket::setupSocket()
     connect(m_socket, &QTcpSocket::readyRead,
             this, &JsonRpcTcpSocket::dataReady);
 
+#if (QT_VERSION > QT_VERSION_CHECK(5,15, 0))
+    void (QAbstractSocket::*errorFun)(QAbstractSocket::SocketError) =
+        &QAbstractSocket::errorOccurred;
+#else
     void (QAbstractSocket::*errorFun)(QAbstractSocket::SocketError) =
         &QAbstractSocket::error;
+#endif
+
     connect(m_socket, errorFun, this,
             [this](QAbstractSocket::SocketError error) {
                 emit socketError(m_socket, error);
