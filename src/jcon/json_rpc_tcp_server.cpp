@@ -125,7 +125,6 @@ void JsonRpcTcpServer::disconnectClient(QObject* client_socket)
 
 bool jcon::JsonRpcTcpServer::isListening() const {
     return m_server.isListening();
-
 }
 
 }
