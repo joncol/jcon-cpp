@@ -41,7 +41,6 @@ private:
 
     /// Clients are uniquely identified by their QTcpSocket*.
     std::map<QTcpSocket*, std::shared_ptr<JsonRpcEndpoint>> m_client_endpoints;
-
 };
 
 }
