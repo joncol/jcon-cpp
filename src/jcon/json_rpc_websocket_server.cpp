@@ -86,7 +86,14 @@ void JsonRpcWebSocketServer::newConnection()
         auto rpc_socket = std::make_shared<JsonRpcWebSocket>(web_socket);
 
         auto endpoint =
-            std::make_shared<JsonRpcEndpoint>(rpc_socket, log(), this);
+            std::shared_ptr<JsonRpcEndpoint>(new JsonRpcEndpoint(rpc_socket, log(), this),
+                [this](JsonRpcEndpoint* obj) {
+                    if (this->m_server != nullptr && this->m_server->isListening()) {
+                        obj->deleteLater();
+                    } else {
+                        delete obj;
+                    }
+                });
 
         connect(endpoint.get(), &JsonRpcEndpoint::socketDisconnected,
                 this, &JsonRpcWebSocketServer::disconnectClient);
