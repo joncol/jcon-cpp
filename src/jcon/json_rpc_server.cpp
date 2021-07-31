@@ -4,6 +4,7 @@
 #include "json_rpc_error.h"
 #include "json_rpc_file_logger.h"
 #include "string_util.h"
+#include "json_rpc_future.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -27,6 +28,7 @@ JsonRpcServer::JsonRpcServer(QObject* parent,
     , m_logger(logger)
     , m_allowNotification(false)
 {
+    qRegisterMetaType<jcon::JsonRpcFuture>();
     if (!m_logger) {
         m_logger = std::make_shared<JsonRpcFileLogger>("json_server_log.txt");
     }
@@ -146,16 +148,32 @@ void JsonRpcServer::jsonRequestReceived(const QJsonObject& request,
 
     // send response if request had valid ID
     if (request_id != InvalidRequestId) {
-        QJsonDocument response = createResponse(request_id,
-                                                return_value,
-                                                method_name);
+        if (return_value.canConvert<jcon::JsonRpcFuture>()) {
+            auto fut = return_value.value<jcon::JsonRpcFuture>();
+            fut.start(this, sm_client_endpoint, [this, request_id, method_name, endpoint = sm_client_endpoint](QVariant res) {
+                QJsonDocument response = createResponse(request_id,
+                                                        res,
+                                                        method_name);
 
-        if (!sm_client_endpoint) {
-            logError("invalid client socket, cannot send response");
-            return;
+                if (!endpoint) {
+                    logError("invalid client socket, cannot send response");
+                    return;
+                }
+
+                endpoint->send(response);
+            });
+        } else {
+            QJsonDocument response = createResponse(request_id,
+                                                    return_value,
+                                                    method_name);
+
+            if (!sm_client_endpoint) {
+                logError("invalid client socket, cannot send response");
+                return;
+            }
+
+            sm_client_endpoint->send(response);
         }
-
-        sm_client_endpoint->send(response);
     }
 }
 
