@@ -302,13 +302,13 @@ void JsonRpcClient::jsonResponseReceived(const QJsonObject& response)
     }
 
     if (m_allowNotification && !response.contains("id")) {
-        if (response["key"].isUndefined() || response["value"].isUndefined()) {
-            logError("key/value is undefined");
+        if (response["method"].isUndefined() || response["params"].isUndefined()) {
+            logError("method/params is undefined");
             return;
         }
 
-        QString key = response.value("key").toString();
-        QVariant value = response.value("value").toVariant();
+        QString key = response.value("method").toString();
+        QVariant value = response.value("params").toVariant();
 
         emit notificationReceived(key, value);
         return;
