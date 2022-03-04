@@ -476,27 +476,27 @@ QJsonDocument JsonRpcServer::createNotification(const QString& key,
 {
     QJsonObject noti_json_obj {
         { "jsonrpc", "2.0" },
-        { "key", key }
+        { "method", key }
     };
 
     if (value.type() == QVariant::Invalid) {
-        noti_json_obj["value"] = QJsonValue();
+        noti_json_obj["params"] = QJsonValue();
     } else if (value.type() == QVariant::List) {
         auto ret_doc = QJsonDocument::fromVariant(value);
-        noti_json_obj["value"] = ret_doc.array();
+        noti_json_obj["params"] = ret_doc.array();
     } else if (value.type() == QVariant::Map) {
         auto ret_doc = QJsonDocument::fromVariant(value);
-        noti_json_obj["value"] = ret_doc.object();
+        noti_json_obj["params"] = ret_doc.object();
     } else if (value.type() == QVariant::Int) {
-        noti_json_obj["value"] = value.toInt();
+        noti_json_obj["params"] = value.toInt();
     } else if (value.type() == QVariant::LongLong) {
-        noti_json_obj["value"] = value.toLongLong();
+        noti_json_obj["params"] = value.toLongLong();
     } else if (value.type() == QVariant::Double) {
-        noti_json_obj["value"] = value.toDouble();
+        noti_json_obj["params"] = value.toDouble();
     } else if (value.type() == QVariant::Bool) {
-        noti_json_obj["value"] = value.toBool();
+        noti_json_obj["params"] = value.toBool();
     } else if (value.type() == QVariant::String) {
-        noti_json_obj["value"] = value.toString();
+        noti_json_obj["params"] = value.toString();
     } else {
         auto msg =
             QString("unknown return type: %1")
