@@ -42,6 +42,8 @@ cmake-build*
 *.out
 *.app
 
-/rtags*
 /.cache/
+/.direnv/
+/.envrc
 /compile_commands.json
+/rtags*
