@@ -38,8 +38,8 @@ endif()
 target_link_libraries(${PROJECT_NAME} jcon)
 
 if(USE_QT)
-    find_package(Qt5 COMPONENTS Core Network WebSockets)
-    target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::WebSockets)
+    find_package(Qt5 COMPONENTS Core Network WebSockets Concurrent)
+    target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::WebSockets Qt5::Concurrent)
 endif()
 
 if(APPLE)

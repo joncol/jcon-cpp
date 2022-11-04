@@ -33,3 +33,15 @@ void ExampleService::namedParams(QString& msg, int answer)
     qDebug().noquote() << "  msg: " << msg;
     qDebug().noquote() << "  answer: " << answer;
 }
+
+jcon::JsonRpcFuture ExampleService::futureGetRandomInt(int limit)
+{
+    qDebug().noquote() << QString("-> getRandomInt: '%1' (client IP: %2)")
+    .arg(limit)
+    .arg(jcon::JsonRpcServer::clientEndpoint()->peerAddress().toString());
+
+    return {[limit]{
+        QThread::sleep(5);
+        return qrand() % limit;
+    }};
+}

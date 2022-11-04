@@ -110,6 +110,24 @@ void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
                  });
 }
 
+void invokeFutureMethodAsync(jcon::JsonRpcClient* rpc_client)
+{
+    qsrand(std::time(nullptr));
+
+    auto req = rpc_client->callAsync("futureGetRandomInt", 10);
+
+    req->connect(req.get(), &jcon::JsonRpcRequest::result,
+                 [](const QVariant& result) {
+        qDebug() << "result of future asynchronous RPC call:" << result;
+    });
+
+    req->connect(req.get(), &jcon::JsonRpcRequest::error,
+                 [](int code, const QString& message) {
+        qDebug() << "RPC error:" << message
+        << " (" << code << ")";
+    });
+}
+
 void invokeMethodSync(jcon::JsonRpcClient* rpc_client)
 {
     qsrand(std::time(nullptr));
@@ -227,6 +245,7 @@ void runServerAndClient(int argc, char* argv[])
 
         invokeNotification(rpc_client);
         invokeMethodAsync(rpc_client);
+        invokeFutureMethodAsync(rpc_client);
         invokeMethodSync(rpc_client);
         invokeStringMethodSync(rpc_client);
         invokeStringMethodAsync(rpc_client);

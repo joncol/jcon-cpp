@@ -1,5 +1,6 @@
 #pragma once
 #include <QObject>
+#include <jcon/json_rpc_future.h>
 
 class ExampleService : public QObject
 {
@@ -13,4 +14,5 @@ public:
     Q_INVOKABLE QString printMessage(const QString& msg);
     Q_INVOKABLE void printNotification(const QString& msg);
     Q_INVOKABLE void namedParams(QString& msg, int answer);
+    Q_INVOKABLE jcon::JsonRpcFuture futureGetRandomInt(int limit);
 };
