@@ -1,6 +1,6 @@
 #include "other_service.h"
 
-#include <QtGlobal>
+#include <QRandomGenerator>
 
 OtherService::OtherService() = default;
 
@@ -8,5 +8,5 @@ OtherService::~OtherService() = default;
 
 int OtherService::getRandomInt(int limit)
 {
-    return -(qrand() % limit);
+    return -(QRandomGenerator::global()->generate() % limit);
 }

@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QVariant>
 #include <QMetaMethod>
+#include <QMetaType>
 
 namespace {
     QString logInvoke(const QMetaMethod& meta_method,
@@ -376,8 +377,8 @@ bool JsonRpcServer::doCall(QObject* object,
     }
 
     const char* return_type_name = meta_method.typeName();
-    int return_type = QMetaType::type(return_type_name);
-    if (return_type != QMetaType::Void) {
+    QMetaType return_type = QMetaType::fromName(return_type_name);
+    if (return_type.id() != QMetaType::Void) {
         return_value = QVariant(return_type, nullptr);
     }
 

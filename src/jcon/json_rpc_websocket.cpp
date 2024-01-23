@@ -1,3 +1,5 @@
+#include <QtGlobal>
+
 #include "json_rpc_websocket.h"
 #include "jcon_assert.h"
 
@@ -41,7 +43,7 @@ void JsonRpcWebSocket::setupSocket()
             this, &JsonRpcWebSocket::dataReady);
 
     void (QWebSocket::*errorPtr)(QAbstractSocket::SocketError) =
-        &QWebSocket::error;
+        &QWebSocket::errorOccurred;
     connect(m_socket, errorPtr, this,
             [this](QAbstractSocket::SocketError error) {
                 emit socketError(m_socket, error);

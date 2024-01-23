@@ -94,8 +94,6 @@ jcon::JsonRpcClient* startClient(QObject* parent,
 
 void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
 {
-    qsrand(std::time(nullptr));
-
     auto req = rpc_client->callAsync("getRandomInt", 10);
 
     req->connect(req.get(), &jcon::JsonRpcRequest::result,
@@ -112,8 +110,6 @@ void invokeMethodAsync(jcon::JsonRpcClient* rpc_client)
 
 void invokeMethodSync(jcon::JsonRpcClient* rpc_client)
 {
-    qsrand(std::time(nullptr));
-
     auto result = rpc_client->call("getRandomInt", 100);
 
     if (result->isSuccess()) {
@@ -161,8 +157,6 @@ void invokeNamedParamsMethodAsync(jcon::JsonRpcClient* rpc_client)
 
 void invokeStringMethodSync(jcon::JsonRpcClient* rpc_client)
 {
-    qsrand(std::time(nullptr));
-
     auto result = rpc_client->call("printMessage", "hello, world");
 
     if (result->isSuccess()) {

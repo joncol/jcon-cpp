@@ -3,7 +3,7 @@
 #include <jcon/json_rpc_tcp_server.h>
 
 #include <QDebug>
-#include <QtGlobal>
+#include <QRandomGenerator>
 
 ExampleService::ExampleService() = default;
 
@@ -14,7 +14,7 @@ int ExampleService::getRandomInt(int limit)
     qDebug().noquote() << QString("-> getRandomInt: '%1' (client IP: %2)")
         .arg(limit)
         .arg(jcon::JsonRpcServer::clientEndpoint()->peerAddress().toString());
-    return qrand() % limit;
+    return QRandomGenerator::global()->generate() % limit;
 }
 
 QString ExampleService::printMessage(const QString& msg)
