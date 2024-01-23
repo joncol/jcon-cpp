@@ -1,22 +1,25 @@
 {
   description = "jcon-cpp";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  inputs.flake-compat = {
-    url = "github:edolstra/flake-compat";
-    flake = false;
-  };
-  inputs.flake-utils = {
-    url = "github:numtide/flake-utils";
-    inputs.nixpkgs.follows = "nixpkgs";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = { self, nixpkgs, flake-compat, flake-utils }:
-    (flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = import nixpkgs { inherit system; };
-      in rec {
-        devShell = pkgs.mkShell rec {
-          packages = with pkgs; [ clang_13 cmake qt5.qtbase qt5.qtwebsockets ];
-        };
-      }));
+  outputs = inputs@{ flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems =
+        [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
+      perSystem = { config, self', inputs', pkgs, system, ... }: {
+        devShells.default =
+          pkgs.mkShell.override { stdenv = pkgs.clangStdenv; } {
+            packages = with pkgs; [
+              clang-tools
+              cmake
+              qt6.qtbase
+              qt6.qtwebsockets
+            ];
+          };
+      };
+    };
 }
