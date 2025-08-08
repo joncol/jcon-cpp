@@ -3,6 +3,7 @@
 #include "jcon.h"
 #include "json_rpc_logger.h"
 
+#include <QMap>
 #include <QAbstractSocket>
 
 #include <memory>
